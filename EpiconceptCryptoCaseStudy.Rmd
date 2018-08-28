@@ -3,9 +3,20 @@ title: 'Analysis of surveillance data : Analysing Cryptosporidium notification d
   from country X, 2004-2015'
 author: "Alexander Spina"
 date: "28 August 2018"
-output: word_document
+output: 
+  worded::rdocx_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#Used for styling word documents (mostly for insterting page breaks)
+library(worded)
+
 ```
+
+is this on the first page? <!---CHUNK_PAGEBREAK--->
+
+Is this on the next page?
+
+
