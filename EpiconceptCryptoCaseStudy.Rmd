@@ -1,0 +1,11 @@
+---
+title: 'Analysis of surveillance data : Analysing Cryptosporidium notification data
+  from country X, 2004-2015'
+author: "Alexander Spina"
+date: "28 August 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
