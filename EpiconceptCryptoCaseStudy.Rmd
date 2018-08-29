@@ -7,10 +7,19 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
 
-#Used for styling word documents (mostly for insterting page breaks)
-library(worded)
 
+```{r, echo = F, warning= F, message= F}
+#load packages
+  #Those required for creating this markdown: 
+    #"Worded": for styling and pagebreaks
+    #"knitr": for styling tables
+required_packages <- c("worded", "knitr") 
+
+for (i in seq(along = required_packages)) {
+  library(required_packages[i], character.only = TRUE)
+}
 ```
 
 <!---CHUNK_PAGEBREAK--->
@@ -51,4 +60,256 @@ This licence is based on http://creativecommons.org/licenses/by-sa/3.0/
 
 <!---CHUNK_PAGEBREAK--->
 
+# Objectives 
+At the end of the case study, participants should be able to analyse surveillance data using Stata, going through all steps including 
+-	data checking, 
+- data cleaning/recoding, 
+- data description, 
+- appropriate statistical testing, 
+- merging datasets with denominators, 
+- calculating incidence rates and 
+- calculating incidence rate ratios.
+
+# Guide to the case study 
+The case study is designed for use with *R* statistical programming software.  
+All files necessary for completing a session are placed in the corresponding session folder. There should be no need to copy files from other session folders. 
+
+<!---CHUNK_PAGEBREAK--->
+
+# Background 
+Cryptosporidium is a protozoal parasite that causes a diarrhoeal illness in humans known as cryptosporidiosis. It is transmitted by the faeco-oral route, with both animals and humans serving as potential reservoirs. Cryptosporidiosis is a notifiable disease in many countries across the world. 
+
+## Case definition 
+
+3.9 Cryptosporidiosis 
+
+**Clinical Criteria** 
+Any person with at least one of the following two: 
+
+- Diarrhoea; 
+- Abdominal pain. 
+
+**Laboratory Criteria** 
+At least one of the following four: 
+
+- Demonstration of *Cryptosporidium* oocysts in stool; 
+- Demonstration of *Cryptosporidium* in intestinal fluid or small-bowel biopsy specimens; 
+- Detection of *Cryptosporidium* nucleic acid in stool; 
+- Detection of *Cryptosporidium* antigen in stool. 
+
+**Epidemiological Criteria** 
+
+One of the following *five* epidemiological links:  
+
+- Human to human transmission 
+- Exposure to a common source 
+- Animal to human transmission 
+- Exposure to contaminated food/drinking water 
+- Environmental exposure 
+
+**Case Classification** 
+
+**A. Possible case**  NA 
+
+**B. Probable case** 
+
+Any person meeting the clinical criteria with an epidemiological link 
+
+**C. Confirmed case** 
+
+Any person meeting the clinical and laboratory criteria 
+
+Note: If the national surveillance system is not capturing clinical symptoms, all laboratory-confirmed individuals should be reported as confirmed cases. 
+
+*From:* [Commission Implementing Decision on the communicable diseases and related special health issues to be covered by epidemiological surveillance – Annex 1  ](https://ec.europa.eu/health/sites/health/files/communicable_diseases/docs/2018_impldecision_annex1_en.pdf) (*replacing Commission Decision No. 2000/96/EC). 
+
+
+## Datasets 
+The main dataset for the case study covers the years from 2004-2015. The dataset is available in Excel: "crypto.xls". 
+
+Each record designates one case of Cryptosporidium. Information on species (e.g. *C. parvum*, *C. hominis*, etc.) is not available in this dataset in country X. Due to funding restrictions, routine speciation of samples was stopped in most laboratories in country X. 
+
+Below you can find a data dictionary of the variables and values included in the dataset: 
+
+
+```{r, echo = F}
+
+kable( matrix( c(
+"Variable name", "Type",	"Code",	"Definition", 
+"ID", "String", "", "Identifies each patient with cryptosporidiosis", 
+"Notif_Date", "Date",	"dd/mm/yyyy",	"Date of notification",
+"Week",	"Integer", "", "Week of notification",
+"Month",	"Integer", "", "Month of notification",
+"Quarter",	"Integer",	"0=female, 1=male", "Quarter of notification",
+"Year",	"Integer", "", "Year of notification",
+"Region",	"Integer",	"1, 2, 3, 4, 5, 6, 7", "Region of notification of case",
+"OnsetDate",	"Date",	"dd/mm/yyyy",	"Date of symptom onset",
+"AgeY",	"Integer", "", "Age in years", 
+"Sex",	"Integer",	"0=female, 1=male",	"Gender",
+"PatientType",	"String", "", "Type of patient, e.g. A&E patient, GP patient, Hospital inpatient, etc.", 
+"CountryofInfection",	"String",	"",	"Suspected country of infection.",
+"CaseClassification",	"String", "", "Classification of case: confirmed, probable, not specified."
+) , ncol = 4, nrow = 14 , byrow = T)
+)
+
+```
+
+
+You will also be using denominator data for the case study. Here we are using 2011 denominator data in the Excel spreadsheet: “denominators2011.xls”. 
+
+There are three tabs on the spreadsheet: Region, AgeGroup, AgeGroup by Region, which give the following information 
+- Region: provides total population numbers by region in 2011 
+- AgeGroup: provides total population numbers for each age in years from 0 to 100 in 2011 - AgeGroup by Region: provides total population numbers for each age in years from 0 to 100 by region in 2011 
+
+## Main task for the case study
+Your main task for the case study is to analyse the surveillance data, with a focus on 2015 data. Your task is in particular to calculate incidence rates, and compare the 2015 data with 2014 data and other previous years. 
+When using *R*, please use *R-scripts*, ensuring there is a “Master” *R-scripts* that serves as a table of contents. This "Master" file should link to other *R-scripts* using the *source* function. 
+
+## Q1: Create a plan of analysis
+
+<!---CHUNK_PAGEBREAK--->
+
+## Help Q1 (example): 
+
+**Data checking** 
+
+- Checks for completeness 
+- Checks for legal values (range, unexpected values): cross-tabulations 
+- Checking consistency of dates 
+- Histograms of continuous variables (age and date variables)
+
+**Recoding the data** 
+
+- Recode continuous variables if needed (e.g. age into age groups) 
+- Recode string variables where appropriate 
+- Add labels if appropriate 
+- Possibly: 
+  - Recode PatientType variable into hospitalised/not hospitalised 
+  - Create a proxy for urban/rural 
+  - Create an imported (yes/no) variable 
+  - Create a “count” variable indicating that each line represents one case (which facilitates further analysis)
+
+**Descriptive analysis (with a focus on 2015 data)** 
+
+- Describe the number of cases in 2015 
+- Describe age (age histogramme, median and interquartile range) 
+- Describe sex, hospitalisation status of patient, region of notification, country of infection.
+
+**Comparative analysis 2015 to 2014** 
+
+- Age histogramme 2015 to 2014 
+- Comparison of age 2015 to 2014: 
+  - Comparison of means 
+  - Comparison of medians 
+- Comparison of proportion of male/female, hospitalised, urban/rural 
+- Choose the appropriate statistical tests and the appropriate level of confidence
+
+**Calculating annual incidence rates** 
+
+- Calculate incidence rates and their 95% CI by year using Stata’s “ci” command 
+- Plot the annual incidence rates 
+- Calculate incidence rates and their 95% CI by year and region 
+- Calculate age group-specific incidence rates and their 95% CI by year 
+
+**Calculate incidence rate ratios (examples)** 
+
+- Calculate incidence rate ratios, 95% CI and p-values between years with 2015 as the reference 
+- Calculate incidence rate ratios, 95% CI and p-values between the average of 2012-14 and 2015 
+- Calculate incidence rate ratios, 95% CI and p-values between urban and rural areas for 2015. 
+
+
+
+
+## Q2: Data checking
+Ensure you are in your correct working directory. Import the worksheet “Crypto” in the Excel spreadsheet “crypto.xls”. Familiarise yourself with the data. Check the data: check completeness of the variables, cross-tabulate the data to check legal values, check consistency of dates, check continuous variables. NB: You can refer to the data dictionary in the background section. 
+
+Are there any issues in the data? Do you need to carry out any data cleaning?
+
+Use *R-scripts*.
+
+
+<!---CHUNK_PAGEBREAK--->
+
+## Help Q2: 
+
+
+
+
+
+<!---CHUNK_PAGEBREAK--->
+
+## Q3: Data recoding 
+
+Rename all variable names to lower case. Recode string variables to numeric where this is useful. Add labels to relevant variables. Create the age bands used for the annual report (0-4 5-9 10-14 15-19 20-24 25-34 35-44 45-54 55-64 65+). Create a variable called “count” signifying that each record has one disease count. 
+Optional: Generate a new variable indicating if a patient is hospitalised or not. Create a variable for “urban/rural”, with Region 1 as a proxy for “urban”. Create a variable indicating if this is an imported case or not. 
+
+
+<!---CHUNK_PAGEBREAK--->
+
+## Help Q3: 
+
+
+
+
+<!---CHUNK_PAGEBREAK--->
+
+## Q4: Descriptive analysis 
+
+Use the dataset “crypto recoded.dta”. Focus on the year 2015. Describe the variables in the dataset. Summarise the results. 
+
+<!---CHUNK_PAGEBREAK---> 
+
+## Help Q4: 
+
+
+
+
+<!---CHUNK_PAGEBREAK---> 
+
+
+
+## Q5: Comparative analysis 2015 vs. 2014 
+
+Use the dataset “crypto recoded.dta”. Focus on the year 2015 compared to 2014 data.
+Look for differences in age, gender, levels of hospitalisation and urban/rural distribution. Think of which statistical tests to use where appropriate. 
+
+<!---CHUNK_PAGEBREAK---> 
+
+## Help Q5: 
+
+
+
+<!---CHUNK_PAGEBREAK--->
+
+## Q6: Calculating incidence rates 
+
+Calculate annual incidence rates (per 100 000 population), overall, by region and by age group (as used for the annual report). Plot the incidence rates. Calculate 95% CI around the incidence rates. Discuss what the 95% CI around these incidence rates mean.
+
+Store the incidence rates and their 95% CI in a dataframe.
+
+When calculating annual incidence rates, we need information on total populations (e.g. total population by year, by region or by age). For this case study, we will use the population information in the Excel spreadsheet: “denominators2011.xls” (see also page 4 for more information). Note that we will use 2011 denominator data for all years for this case study, assuming little population fluctuation.
+
+<!---CHUNK_PAGEBREAK---> 
+
+## Help Q6: 
+
+<!---CHUNK_PAGEBREAK---> 
+
+
+## Q7: Calculate incidence rate ratios 
+
+Calculate incidence rate ratios, 95% CI and p-values 
+
+- between years with 2015 as the reference. 
+- between the average of 2012-14 and 2015. 
+- between urban and rural areas for 2015. 
+
+Use Poisson. 
+
+
+Interpret your findings. 
+
+<!---CHUNK_PAGEBREAK---> 
+
+## Help Q7: 
 
