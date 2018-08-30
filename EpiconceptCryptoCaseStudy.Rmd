@@ -149,7 +149,7 @@ kable( matrix( c(
 "PatientType",	"String", "", "Type of patient, e.g. A&E patient, GP patient, Hospital inpatient, etc.", 
 "CountryofInfection",	"String",	"",	"Suspected country of infection.",
 "CaseClassification",	"String", "", "Classification of case: confirmed, probable, not specified."
-) , ncol = 4, nrow = 14 , byrow = T)
+), ncol = 4, nrow = 14, byrow = T)
 )
 
 ```
@@ -242,6 +242,7 @@ We will mainly use packages which come ready installed with R (base code), but w
 You will need to install these before starting. We will be using the following packages. 
 
 - *xlsx*: for reading in excel files (requires java to be installed) 
+- *Hmisc*: for helper functions such as *describe* which gives a summary of datasets
 - *EpiStats*: for creating two by two tables and calculating odds or risk ratios
 
 Packages can be installed using the *install.packages* function, where you specify the name of the package in quation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
@@ -257,7 +258,7 @@ If you want to install multiple packages at once you can simply save (assign the
 ```{r, eval = F}
 
 # Installing multiple required packages for the case study
-required_packages <- c("xlsx","EpiStats") 
+required_packages <- c("xlsx", "EpiStats", "Hmisc")
 install.packages(required_packages, dependencies = TRUE)
 ```
 
@@ -266,13 +267,14 @@ Alternatively, if you are unsure whether the packages are already installed you 
 
 ```{r, eval = F}
 # Installing required packages for this case study
-for(pkg in required_packages){
-  if(!pkg %in% rownames(installed.packages())) {
+for (pkg in required_packages) {
+  if (!pkg %in% rownames(installed.packages())) {
     install.packages(pkg)
   }
 }
 ```
 
+<!---CHUNK_PAGEBREAK--->
 
 Once you have succesfully installed all your packages they are saved on your computer. This means that you only need to install them the first time. 
 
@@ -289,12 +291,11 @@ Here too, you can load multiple packages at the same time within a loop; again d
 ```{r, results='hide', message=FALSE, warning=FALSE}
 
 # Loading required packages for this case study
-required_packages <- c("xlsx","EpiStats")  
+required_packages <- c("xlsx", "EpiStats", "Hmisc")
 
 for (i in seq(along = required_packages)) {
   library(required_packages[i], character.only = TRUE)
 }
-
 ```
 
 
@@ -319,11 +320,105 @@ setwd("C:/Users/Username/Desktop/EpiconceptCrypto")
 
 ### Reading in Excel files
 
-Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, saving it as a dataframe called crypto. 
+Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, storing it as a dataframe within *R* called crypto. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
 
 ```{r}
-crypto <- read.xlsx("crypto.xls", sheetName =  "Crypto")
+crypto <- read.xlsx("crypto.xls", sheetName =  "Crypto", 
+                    stringsAsFactors = FALSE )
 ```
+
+### Familiarise yourself with data 
+
+You can examine the structure of your data set using the following functions. The *str* function will provide an overview of which variable types are in your dataset. The *summary* function will give minimum, maximum, first and third quartiles as well as medians and means for variables which are not strings (characters). The *describe* function from the *Hmisc* package provides further details on the dataset and variables. Each of these commands can be run for individual variables also. You can refer to an individual variable of a data set by using the **$**, for example, if you wanted to obtain a summary of the a numeric age variable, then you would write **summary(crypto\$age)**.  
+
+```{r, eval=F}
+# str provides an overview of the number of observations and variable types
+str(crypto)
+
+# summary provides mean, median and max values of your variables
+summary(crypto)
+
+# describe (from Hmisc package) provides no. of observations, missing values, unique levels of each variable
+describe(crypto)
+```
+
+
+You can also look at completeness of specific variables by combining the *table* function with the *is.na* function. It is also possible to combine multiple arguments using arguments such as "and" (using &) as well as "or" (using |). Note that *R* is case sensitive, so that there is a difference between "Not specified" and "Not Specified" in the PatientType and CountryofInfection variables. 
+
+```{r, eval = F}
+
+# Examine how many are missing or unknown in the AgeY variable 
+table(is.na(crypto$AgeY) | crypto$AgeY == "Unknown")
+
+# missing, unknown or not specified in the PatientType variable
+table(is.na(crypto$PatientType) | 
+        crypto$PatientType == "Unknown" | 
+        crypto$PatientType == "Not Specified")
+
+# missing, unknown or not specified in the CountryofInfection variable
+table(is.na(crypto$CountryofInfection) | 
+        crypto$CountryofInfection == "Unknown" | 
+        crypto$CountryofInfection == "Not specified")
+```
+
+
+
+You can also check if the onset date is before or on the same day as the notification date, and then return the corresponding IDs: 
+
+```{r, eval = F}
+
+# check number not missing with onset on or before notification date
+
+table(!is.na(crypto$Notif_Date) & 
+        crypto$OnsetDate <= crypto$Notif_Date)
+
+```
+
+
+There are two ways to select rows which have onset after notification. One way is to use the *subset* function, which you specificy the dataset in the x argument, then provide a rule for selecting rows in the subset argument and finaly specify which columns to select. The second alternative involves using square brackets to subset the dataframe; in this scenario what comes before the comma specifies rows and what comes after specifies columns; for example **dataset[rows, columns]**. Both options give the same outcome. 
+
+<!---CHUNK_PAGEBREAK--->
+
+```{r, eval = F}
+
+# return IDs, onset and notification dates for those with onset after notification
+subset(
+  x = crypto,
+  subset = !is.na(crypto$Notif_Date) &
+    crypto$OnsetDate > crypto$Notif_Date,
+  select = c("ID", "OnsetDate", "Notif_Date")
+)
+
+
+# return IDs, onset and notification dates for those with onset after notification
+
+crypto[which(!is.na(crypto$Notif_Date) &
+  crypto$OnsetDate > crypto$Notif_Date), c("ID", "OnsetDate", "Notif_Date")]
+
+```
+
+
+You can also check if all ages are within a reasonable age range. To do this first change "Unknown" to be NA and then create a new age variable which is AgeY in numeric form. 
+
+
+```{r}
+
+# replace unknown with NA 
+crypto$AgeY[crypto$AgeY == "Unknown"] <- NA
+
+# create new age variable as numeric of AgeY
+crypto$age <- as.numeric(crypto$AgeY)
+
+```
+
+You can then use summary to get information about the age variable. 
+
+```{r, eval = F}
+# summary provides mean, median and max values of age
+summary(crypto$age)
+
+```
+
 
 
 
