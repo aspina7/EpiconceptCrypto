@@ -221,7 +221,7 @@ When using *R*, please use *R-scripts*, ensuring there is a “Master” *R-scri
 
 
 ## Q2: Data checking
-Ensure you are in your correct working directory. Import the worksheet “Crypto” in the Excel spreadsheet “crypto.xls”. Familiarise yourself with the data. Check the data: check completeness of the variables, cross-tabulate the data to check legal values, check consistency of dates, check continuous variables. NB: You can refer to the data dictionary in the background section. 
+Install and Load packages required for this case study. Ensure you are in your correct working directory. Import the worksheet “Crypto” in the Excel spreadsheet “crypto.xls”. Familiarise yourself with the data. Check the data: check completeness of the variables, cross-tabulate the data to check legal values, check consistency of dates, check continuous variables. NB: You can refer to the data dictionary in the background section. 
 
 Are there any issues in the data? Do you need to carry out any data cleaning?
 
@@ -233,6 +233,97 @@ Use *R-scripts*.
 ## Help Q2: 
 
 
+### Installing packages and functions
+
+*R* packages are bundles of functions which extend the capability of R. Thousands of add-on packages are available in the main online repository (known as [CRAN](https://cran.r-project.org/)) and many more packages in development can be found on [GitHub](https://github.com/). They may be installed and updated over the Internet.
+
+We will mainly use packages which come ready installed with R (base code), but where it makes things easier we will use add-on packages. All the R packages you need for the exercises can be installed over the Internet.
+
+You will need to install these before starting. We will be using the following packages. 
+
+- *xlsx*: for reading in excel files (requires java to be installed) 
+- *EpiStats*: for creating two by two tables and calculating odds or risk ratios
+
+Packages can be installed using the *install.packages* function, where you specify the name of the package in quation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
+
+```{r, eval = F}
+
+#install the xlsx package and packages it depends on
+install.packages("xlsx", dependencies = TRUE)
+```
+
+If you want to install multiple packages at once you can simply save (assign them to an object using the arrow, and "c" simply pulls strings together), the names of the packages you are interested in as a string object (which you can call whatever you like, in this case we called it required_packages) and pass these through the *install.packages* function; for example: 
+
+```{r, eval = F}
+
+# Installing multiple required packages for the case study
+required_packages <- c("xlsx","EpiStats") 
+install.packages(required_packages, dependencies = TRUE)
+```
+
+
+Alternatively, if you are unsure whether the packages are already installed you can run the following for-loop. It is not necessary to understand the code at this point, but simply appreciated that it is doing the same as above, while also checking whether the packages are installed. 
+
+```{r, eval = F}
+# Installing required packages for this case study
+for(pkg in required_packages){
+  if(!pkg %in% rownames(installed.packages())) {
+    install.packages(pkg)
+  }
+}
+```
+
+
+Once you have succesfully installed all your packages they are saved on your computer. This means that you only need to install them the first time. 
+
+After that, whenever you want to use a package in your *R* session, you need to load the package using the *library* function; the console will give you several messages in red, however this are most often just information and not errors. Note that here, you do not require quotation marks, for example: 
+
+```{r, eval = F}
+
+library(xlsx)
+
+```
+
+Here too, you can load multiple packages at the same time within a loop; again do not try to understand this just yet, just appreciate it is possible. 
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+
+# Loading required packages for this case study
+required_packages <- c("xlsx","EpiStats")  
+
+for (i in seq(along = required_packages)) {
+  library(required_packages[i], character.only = TRUE)
+}
+
+```
+
+
+### Setting your working directory
+
+You can check the path for your current working directory using the *getwd* function.
+
+```{r, eval = F}
+#Check your current working directory
+getwd()
+
+```
+
+To set your working directory you can use the *setwd* function. 
+
+```{r, eval = F}
+
+setwd("C:/Users/Username/Desktop/EpiconceptCrypto")
+
+```
+
+
+### Reading in Excel files
+
+Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, saving it as a dataframe called crypto. 
+
+```{r}
+crypto <- read.xlsx("crypto.xls", sheetName =  "Crypto")
+```
 
 
 
