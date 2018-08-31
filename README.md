@@ -1,3 +1,13 @@
+#Notes for revisions: 
+
+- The *xlsx* package is quite heavily java reliant, so setup can be annoying depending on admin rights/java home directories and it can also be quite slow/fail with larger datasets 
+  - Alternative options include tidyverse's *readxl* package (issue: creates a tbl rather than a dataframe with complicated POSIxct dates; could just add an extra step where change from tbl to data frame), or the *RODBC* package which can connect to many different sources (issue: unecessary extra code). Many other java based excel connection packages exist but dont really differ from *xlsx*. 
+- The *Hmisc* package is only used for the describe function, not sure we actually need to include it in the case study, could mention that it is out there but think that str and summary give enough information. The issue is *Hmisc* sometimes creates problems on install depending on admin rights and read/write folders etc. 
+- Unsure about how much explanation of code is needed; the stata case study has almost none, but code is quite similar. If this is not the first case study used then perhaps the level of explanation is not necessary. 
+
+
+
+
 # Analysis of surveillance data: Analysing Cryptosporidium notification data from country X, 2004-2015
 
 This is the repository for the Epiconcept Cryptosporidium case study using *R* statistical programming software. 
