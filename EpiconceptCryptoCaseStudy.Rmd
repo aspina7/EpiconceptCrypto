@@ -158,6 +158,7 @@ kable( matrix( c(
 You will also be using denominator data for the case study. Here we are using 2011 denominator data in the Excel spreadsheet: “denominators2011.xls”. 
 
 There are three tabs on the spreadsheet: Region, AgeGroup, AgeGroup by Region, which give the following information 
+
 - Region: provides total population numbers by region in 2011 
 - AgeGroup: provides total population numbers for each age in years from 0 to 100 in 2011 - AgeGroup by Region: provides total population numbers for each age in years from 0 to 100 by region in 2011 
 
@@ -241,8 +242,7 @@ We will mainly use packages which come ready installed with R (base code), but w
 
 You will need to install these before starting. We will be using the following packages. 
 
-- *xlsx*: for reading in excel files (requires java to be installed) 
-- *Hmisc*: for helper functions such as *describe* which gives a summary of datasets
+- *xlsx*: for reading in excel files (requires java to be installed)
 - *EpiStats*: for creating two by two tables and calculating odds or risk ratios
 
 Packages can be installed using the *install.packages* function, where you specify the name of the package in quation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
@@ -258,7 +258,7 @@ If you want to install multiple packages at once you can simply save (assign the
 ```{r, eval = F}
 
 # Installing multiple required packages for the case study
-required_packages <- c("xlsx", "EpiStats", "Hmisc")
+required_packages <- c("xlsx", "EpiStats")
 install.packages(required_packages, dependencies = TRUE)
 ```
 
@@ -318,18 +318,18 @@ setwd("C:/Users/Username/Desktop/EpiconceptCrypto")
 ```
 
 
-### Reading in Excel files
+### Reading in files
 
-Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, storing it as a dataframe within *R* called crypto. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
+Import the dataset from a comma seperated value (.csv) file using the *read.csv* function, storing it as a dataframe within *R* called crypto. For a CSV file the separator is normally a comma, however depending on the language of your operating system this can also be other values, for example a semi-colon. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
 
 ```{r}
-crypto <- read.xlsx("crypto.xls", sheetName =  "Crypto", 
+crypto <- read.csv("crypto.csv", sep = ";" , 
                     stringsAsFactors = FALSE )
 ```
 
 ### Familiarise yourself with data 
 
-You can examine the structure of your data set using the following functions. The *str* function will provide an overview of which variable types are in your dataset. The *summary* function will give minimum, maximum, first and third quartiles as well as medians and means for variables which are not strings (characters). The *describe* function from the *Hmisc* package provides further details on the dataset and variables. Each of these commands can be run for individual variables also. You can refer to an individual variable of a data set by using the **$**, for example, if you wanted to obtain a summary of the a numeric age variable, then you would write **summary(crypto\$age)**.  
+You can examine the structure of your data set using the following functions. The *str* function will provide an overview of which variable types are in your dataset. The *summary* function will give minimum, maximum, first and third quartiles as well as medians and means for variables which are not strings (characters). Each of these commands can be run for individual variables also. You can refer to an individual variable of a data set by using the **$**, for example, if you wanted to obtain a summary of the a numeric age variable, then you would write **summary(crypto\$age)**.  
 
 ```{r, eval=F}
 # str provides an overview of the number of observations and variable types
@@ -338,8 +338,6 @@ str(crypto)
 # summary provides mean, median and max values of your variables
 summary(crypto)
 
-# describe (from Hmisc package) provides no. of observations, missing values, unique levels of each variable
-describe(crypto)
 ```
 
 
@@ -411,7 +409,7 @@ crypto$age <- as.numeric(crypto$AgeY)
 
 ```
 
-You can then use summary to get information about the age variable. 
+You can then use *summary* to get information about the age variable. 
 
 ```{r, eval = F}
 # summary provides mean, median and max values of age
@@ -420,6 +418,52 @@ summary(crypto$age)
 ```
 
 
+For numeric variables, such as age and dates, you can use histograms to check for unusual patterns or outliers. You specify your variable as well as axis labels. To save you can plot, then use *dev.copy* to choose a file type and name; *dev.off* closes the connection. 
+For date variable you need to specify what time frame you would like to plot, such as "days", "weeks", "months", "years". Because there are so many points to plot, you need to specify you want the frequency, otherwise the density will be plotted. 
+
+```{r, eval = F}
+
+#Plot a histogram of age
+hist(crypto$age,
+  xlab = "Age",
+  ylab = "Count"
+)
+
+#save histogram of age as a png file
+dev.copy(png,'age.png')
+dev.off()
+
+
+#plot histogram of notification date
+  #choose days and frequency
+hist(crypto$Notif_Date,
+  breaks = "days",
+  freq = TRUE,
+  xlab = "Notification date",
+  ylab = "Count"
+)
+
+#save as a png
+dev.copy(png,'notificationdate.png')
+dev.off()
+
+
+
+#plot histogram of onset date
+  #choose days and frequency
+hist(crypto$OnsetDate,
+  breaks = "days",
+  freq = TRUE,
+  xlab = "Onset date",
+  ylab = "Count"
+)
+
+#save as a png
+dev.copy(png,'onsetdate.png')
+dev.off()
+
+
+```
 
 
 <!---CHUNK_PAGEBREAK--->
@@ -433,6 +477,198 @@ Optional: Generate a new variable indicating if a patient is hospitalised or not
 <!---CHUNK_PAGEBREAK--->
 
 ## Help Q3: 
+
+### Reading in files
+
+Import the dataset from a comma seperated value (.csv) file using the *read.csv* function, storing it as a dataframe within *R* called crypto. For a CSV file the separator is normally a comma, however depending on the language of your operating system this can also be other values, for example a semi-colon. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
+
+```{r}
+crypto <- read.csv("crypto.csv", sep = ";" , 
+                    stringsAsFactors = FALSE )
+```
+
+
+### Rename all variable names to all lowercase letters:
+
+You can check and change the variable names in your dataset using the *names* function. Then using the *tolower* function you can re-assign these in lower case letters. 
+
+```{r}
+names(crypto) <- tolower( names(crypto) )
+```
+
+### Recode string to numeric variables, where useful:
+
+You have already done this in the previous section, but now the variable names are in lower case. 
+
+```{r}
+
+# replace unknown with NA 
+crypto$agey[crypto$agey == "Unknown"] <- NA
+
+# create new age variable as numeric of AgeY
+crypto$age <- as.numeric(crypto$agey)
+
+```
+
+### Add labels where appropriate: 
+
+In order to add labels in *R* you have to change variables in to factors. This allows you to specify levels (the order in which categories appear in output) and then label these levels. 
+
+```{r}
+
+#re-write the sex variable as a factor defining levels and labels
+crypto$sex <- factor(crypto$sex, 
+                     levels = c(1, 0), 
+                     labels = c("male", "female")
+                     )
+
+```
+
+```{r, eval = F}
+#Check the outcome 
+table(crypto$sex, useNA = "always")
+```
+
+
+### Create annual report age groups with labels: 
+
+There are several ways to do this. The simplest version is as below, for other options see the appendix. 
+
+```{r}
+
+#generate an empty variable called ar_age
+crypto$ar_age <- NA
+
+#where age is under 5, set ar_age to 0
+crypto$ar_age[crypto$age < 5] <-  0
+
+#set the rest of the groups 
+crypto$ar_age[crypto$age >= 5 & 
+                crypto$age < 10] <- 1
+
+crypto$ar_age[crypto$age >= 10 & 
+                crypto$age < 15] <- 2
+
+crypto$ar_age[crypto$age >= 15 & 
+                crypto$age < 20] <- 3
+
+crypto$ar_age[crypto$age >= 20 & 
+                crypto$age < 25] <- 4
+
+crypto$ar_age[crypto$age >= 25 & 
+                crypto$age < 35] <- 5
+
+crypto$ar_age[crypto$age >= 35 & 
+                crypto$age < 45] <- 6
+
+crypto$ar_age[crypto$age >= 45 & 
+                crypto$age < 55] <- 7
+
+crypto$ar_age[crypto$age >= 55 & 
+                crypto$age < 65] <- 8
+
+crypto$ar_age[crypto$age >= 65] <- 9
+
+
+
+#change to a factor and define labels 
+
+crypto$ar_age <- factor(crypto$ar_age, 
+                        levels = 0:9, 
+                        labels = c("0-4",
+                                   "5-9", 
+                                   "10-14", 
+                                   "15-19", 
+                                   "20-24", 
+                                   "25-34", 
+                                   "35-44", 
+                                   "45-54", 
+                                   "55-64", 
+                                   "65+"
+                                   )
+                        )
+
+
+```
+
+
+### Add a count variable that signifies one count of disease:
+
+```{r}
+crypto$count <- 1
+```
+
+
+### Save the file:
+
+You can save your cleaned dataset as an R datafile (.Rda) using the *save* function and re-load the same dataset using the *load* function. 
+
+```{r, eval= F}
+
+#save your dataset
+save(crypto, file = "crypto.Rda")
+
+```
+
+### Optional 
+
+*NB.* If doing the optional recoding, please save the file at the end. 
+
+### Create a variable for “hospitalised”:
+
+```{r}
+
+#If hospital inpatient then 1 else 0
+crypto$hospitalised <- ifelse(crypto$patienttype == "Hospital Inpatient", 
+                              1, 0)
+
+#Not specified and unknown set to missing
+crypto$hospitalised[crypto$patienttype == "Not Specified" | 
+                      crypto$patienttype == "Unknown"] <- NA
+
+```
+
+
+### Create a proxy for urban vs. rural:
+
+```{r}
+#if region is 1 then urban else rural
+crypto$urban <- ifelse(crypto$region == 1, 1, 0) 
+
+#add order and labels
+crypto$urban <- factor(crypto$urban, 
+                       levels = c(1, 0), 
+                       labels = c("urban", "rural")
+                       )
+```
+
+
+
+### Create an imported variable: 
+
+```{r}
+#If country X then not imported, else imported
+crypto$imported <- ifelse(crypto$countryofinfection == "Country X", 0, 1) 
+
+#Not specified and unknown set to missing
+crypto$imported[crypto$countryofinfection == "Not Specified" | 
+                      crypto$countryofinfection == "Unknown"] <- NA
+
+#add order and labels
+crypto$imported <- factor(crypto$imported, 
+                          levels = c(1, 0), 
+                          labels = c("Imported", "Country X")
+                          )
+```
+
+
+
+```{r, echo = F}
+
+#save your dataset
+save(crypto, file = "crypto.Rda")
+
+```
 
 
 
@@ -498,4 +734,73 @@ Interpret your findings.
 <!---CHUNK_PAGEBREAK---> 
 
 ## Help Q7: 
+
+
+
+
+
+<!---CHUNK_PAGEBREAK---> 
+
+# Appendix 
+
+
+### Reading in Excel files
+
+Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, storing it as a dataframe within *R* called crypto. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
+
+```{r}
+crypto <- read.xlsx("crypto.xls", sheetName =  "Crypto", 
+                    stringsAsFactors = FALSE )
+```
+
+### Create annual report age groups with labels:
+
+It is possible to create nice age categories with labels using a self-made function. 
+This makes use of the *cut* function in combination with others such as *seq*, *upper* and *lower*. 
+
+```{r, eval = F}
+#create an age grouping function 
+
+age.cat <- function(x, lower = 0, upper, by = 10,
+                    sep = "-", above.char = "+") {
+
+  labs <- c(paste(seq(lower, upper - by, by = by),
+                  seq(lower + by - 1, upper - 1, by = by),
+                  sep = sep),
+            paste(upper, above.char, sep = ""))
+
+  cut(floor(x), breaks = c(seq(lower, upper, by = by), Inf),
+      right = FALSE, labels = labs)
+}
+```
+
+Once it has been saved as a function you can use it just as any other. 
+
+
+
+```{r, eval = F}
+
+#Create a variable with 5 year age bands
+crypto$agegp5 <- age.cat(crypto$age, 
+                         upper = 80, 
+                         by = 5)
+
+#create a variable with 10 year age bands 
+crypto$agegp10 <- age.cat(crypto$age, 
+                         upper = 90, 
+                         by = 10)
+```
+
+You can alternatively make your own groupings with the following code. 
+
+```{r, eval = F}
+
+# Create alternative age grouping var
+crypto$agegpalt <- as.character(cut(
+                                crypto$age,
+                                breaks = c(-1, 4, 49, 200),
+                                labels = c("0-4", "5-49", "50+")
+                              ))
+```
+
 
