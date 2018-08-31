@@ -1,4 +1,4 @@
-#Notes for revisions: 
+# Notes for revisions: 
 
 - The *xlsx* package is quite heavily java reliant, so setup can be annoying depending on admin rights/java home directories and it can also be quite slow/fail with larger datasets 
   - Alternative options include tidyverse's *readxl* package (issue: creates a tbl rather than a dataframe with complicated POSIxct dates; could just add an extra step where change from tbl to data frame), or the *RODBC* package which can connect to many different sources (issue: unecessary extra code). Many other java based excel connection packages exist but dont really differ from *xlsx*. 
