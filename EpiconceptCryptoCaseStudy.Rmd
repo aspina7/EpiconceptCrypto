@@ -291,7 +291,7 @@ Here too, you can load multiple packages at the same time within a loop; again d
 ```{r, results='hide', message=FALSE, warning=FALSE}
 
 # Loading required packages for this case study
-required_packages <- c("xlsx", "EpiStats", "Hmisc")
+required_packages <- c("xlsx", "EpiStats")
 
 for (i in seq(along = required_packages)) {
   library(required_packages[i], character.only = TRUE)
@@ -341,7 +341,7 @@ summary(crypto)
 ```
 
 
-You can also look at completeness of specific variables by combining the *table* function with the *is.na* function. It is also possible to combine multiple arguments using arguments such as "and" (using &) as well as "or" (using |). Note that *R* is case sensitive, so that there is a difference between "Not specified" and "Not Specified" in the PatientType and CountryofInfection variables. 
+You can also look at completeness of specific variables by combining the *table* function with the *is.na* function. It is also possible to combine multiple arguments using arguments such as "and" (using &) as well as "or" (using |). Note that *R* is case sensitive, so that there is a difference between "Not specified" and "Not Specified" in the PatientType and CountryofInfection variables This could also be achieved using a package as described in the appendix. 
 
 ```{r, eval = F}
 
@@ -748,10 +748,30 @@ Interpret your findings.
 
 Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, storing it as a dataframe within *R* called crypto. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
 
-```{r}
+```{r, eval = F}
+
+#read in the dataset, specifying sheet name
 crypto <- read.xlsx("crypto.xls", sheetName =  "Crypto", 
                     stringsAsFactors = FALSE )
 ```
+
+
+### Get summary information of your dataset 
+
+```{r, eval = F}
+
+#Install the summarytools package
+install.packages("summarytools")
+
+#load the package to this 
+library(summarytools)
+
+#call the dfsummary function and view its output
+view(dfSummary(crypto))
+```
+
+
+
 
 ### Create annual report age groups with labels:
 
