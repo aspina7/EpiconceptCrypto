@@ -685,9 +685,9 @@ Use the dataset “crypto recoded.dta”. Focus on the year 2015. Describe the v
 
 Open your dataset using the load function. 
 
-```{r, eval = F}
+```{r}
 #load your dataset 
-load("cph.Rda")
+load("crypto.Rda")
 ```
 
 Restrict your data to 2015 using the subset function. In this situation you over-write your dataset with the subset
@@ -848,11 +848,186 @@ round(prop.table(counts)*100, digits = 2)
 ## Q5: Comparative analysis 2015 vs. 2014 
 
 Use the dataset “crypto recoded.dta”. Focus on the year 2015 compared to 2014 data.
-Look for differences in age, gender, levels of hospitalisation and urban/rural distribution. Think of which statistical tests to use where appropriate. 
+Look for differences in age, gender, levels of hospitalisation and urban/rural distribution. Think of which statistical tests to use where appropriate.  
 
 <!---CHUNK_PAGEBREAK---> 
 
 ## Help Q5: 
+
+
+
+Open your dataset using the load function. 
+
+```{r}
+#load your dataset 
+load("crypto.Rda")
+```
+
+
+Drop data from years that are not relevant using the subset function. For this analysis we are only interested in 2015 and 2014 data. In this situation you over-write your dataset with the subset. 
+
+
+```{r}
+
+#assign your 2015 subset to crypto (over-write original crypto)
+crypto <- subset(
+            x = crypto,
+            subset = year >= 2014
+          )
+
+#check cases per year 
+
+table(crypto$year, useNA = "always")
+
+```
+
+
+Compare age in 2015 to 2014:
+
+
+```{r, eval = F}
+
+#specify you want one row of two histograms
+par(mfrow = c(1,2))
+
+#plot a histograme for males (use squarebrackets to subset)
+  #give a title using "main", 
+  #set the y axis limits using ylim
+hist(crypto$age[crypto$year == 2014], 
+     main = "2014",
+     xlab = "Age", 
+     ylab = "Count",
+     breaks = 100, 
+     xlim = c(0, 100), 
+     ylim = c(0, 100) )
+
+#plot a histogram for females
+hist(crypto$age[crypto$year == 2015], 
+     main = "2015",
+     xlab = "Age", 
+     ylab = "Count",
+     breaks = 100, 
+     xlim = c(0, 100), 
+     ylim = c(0, 100) )
+```
+
+
+Look at the median and the interquartile range and test for equality of distributions:
+
+```{r, eval = F}
+#use the aggregate function to group by year 
+  #year must be as a list 
+  #specify the function you would like to use (summary)
+aggregate(crypto$age, by = list(crypto$year), FUN = summary)
+
+#use the boxplot function to plot 
+
+boxplot(age~year, data = crypto)
+
+```
+
+```{r}
+
+wilcox.test(crypto$age~crypto$year)
+
+```
+
+
+
+Look at the means (and standard deviations) and compare means using the t-test:
+
+```{r, eval = F}
+#use the aggregate function to group by year 
+  #year must be as a list 
+  #specify the function you would like to use (summary)
+aggregate(crypto$age, by = list(crypto$year), FUN = summary)
+
+#use t.test function to compare means
+t.test(crypto$age ~ crypto$year)
+
+```
+
+Comparison of proportion of male/female, hospitalised, urban/rural, imported/not imported:
+
+```{r, eval = F}
+
+#For sex
+
+#get counts
+  #save table as "counts"
+counts <- table(crypto$sex, crypto$year) 
+
+#get rounded proportions of counts
+  #margin = 2 for column proportions
+round(prop.table(counts, margin = 2) * 100, digits = 2)
+
+#chisq.test function requires you to input a table
+chisq.test(counts)
+
+```
+
+
+
+```{r, eval = F}
+
+#For hospitalised
+
+#get counts
+  #save table as "counts"
+counts <- table(crypto$hospitalised, crypto$year) 
+
+#get rounded proportions of counts
+  #margin = 2 for column proportions
+round(prop.table(counts, margin = 2) * 100, digits = 2)
+
+#chisq.test function requires you to input a table
+chisq.test(counts)
+
+```
+
+
+
+```{r, eval = F}
+
+#For urban
+
+#get counts
+  #save table as "counts"
+counts <- table(crypto$urban, crypto$year) 
+
+#get rounded proportions of counts
+  #margin = 2 for column proportions
+round(prop.table(counts, margin = 2) * 100, digits = 2)
+
+#chisq.test function requires you to input a table
+chisq.test(counts)
+
+```
+
+
+
+```{r, eval = F}
+
+#For imported
+
+#get counts
+  #save table as "counts"
+counts <- table(crypto$imported, crypto$year) 
+
+#get rounded proportions of counts
+  #margin = 2 for column proportions
+round(prop.table(counts, margin = 2) * 100, digits = 2)
+
+#chisq.test function requires you to input a table
+chisq.test(counts)
+
+```
+
+
+The proportion of urban cases is higher in 2015 compared to 2014 (12.6% vs. 6.6% respectively; p<0.01). 
+
+The proportion of imported cases is similar in 2015 compared to 2014 (46.2% vs. 48.4% respectively; p=0.6062). 
+The median age in 2015 is 5 years (IQR: 2-10) compared to 4 years in 2014 (IQR: 1-10). The age distributions in 2015 and 2014 are not statistically significantly different from each other (p=0.236).
 
 
 
