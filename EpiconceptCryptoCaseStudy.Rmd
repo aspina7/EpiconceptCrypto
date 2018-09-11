@@ -683,7 +683,162 @@ Use the dataset “crypto recoded.dta”. Focus on the year 2015. Describe the v
 
 ## Help Q4: 
 
+Open your dataset using the load function. 
 
+```{r, eval = F}
+#load your dataset 
+load("cph.Rda")
+```
+
+Restrict your data to 2015 using the subset function. In this situation you over-write your dataset with the subset
+
+
+```{r}
+
+#assign your 2015 subset to crypto (over-write original crypto)
+crypto <- subset(
+            x = crypto,
+            subset = year == 2015
+          )
+```
+
+
+How many cases were notified? 
+
+```{r}
+#check number of rows in your dataset
+nrow(crypto)
+```
+
+
+Describe age.
+
+```{r, eval = F}
+
+#Plot a histogram of age
+  #you can specify a bar for each age with "breaks"
+  #you can set your x axis from 0-100 using "xlim"
+hist(crypto$age, 
+  xlab = "Age",
+  ylab = "Count", 
+  breaks = 100,
+  xlim = c(0, 100)
+)
+
+
+#Get a summary of age 
+summary(crypto$age)
+```
+
+To plot side by side histograms you need to use the "par" function. 
+
+
+```{r, fig.width = 6}
+
+#specify you want one row of two histograms
+par(mfrow = c(1,2))
+
+#plot a histograme for males (use squarebrackets to subset)
+  #give a title using "main", 
+  #set the y axis limits using ylim
+hist(crypto$age[crypto$sex == "male"], 
+     main = "male",
+     xlab = "Age", 
+     ylab = "Count",
+     breaks = 100, 
+     xlim = c(0, 100), 
+     ylim = c(0, 50) )
+
+#plot a histogram for females
+hist(crypto$age[crypto$sex == "female"], 
+     main = "female",
+     xlab = "Age", 
+     ylab = "Count",
+     breaks = 100, 
+     xlim = c(0, 100), 
+     ylim = c(0, 40) )
+
+
+```
+
+
+Describe sex. To see how to bind these together in to a signle contingency table, see the appendix. 
+
+```{r, eval = F}
+
+#get counts of sex 
+  #save table as "counts"
+counts <- table(crypto$sex) 
+
+#get proportions for counts table
+prop.table(counts)
+
+#you could also multiple by 100 and round to 2 digits
+round(prop.table(counts)*100, digits = 2)
+
+```
+
+<!---CHUNK_PAGEBREAK---> 
+
+Describing hospitalised patients 
+
+```{r, eval = F}
+
+#get counts of hospitalisations 
+  #save table as "counts"
+counts <- table(crypto$hospitalised) 
+
+#get rounded proportions of counts
+round(prop.table(counts)*100, digits = 2)
+
+```
+
+Do the same for age groupings among hospitalised patients 
+```{r, eval = F}
+
+
+# get counts of hospitalisations by agegroup
+# save table as "counts"
+counts <- table(crypto$ar_age, crypto$hospitalised)
+
+# get rounded proportions of counts
+# specify that you want row proportions (margin = 1)
+round(
+  prop.table(counts, margin = 1) * 100,
+  digits = 2
+)
+
+
+```
+
+
+Describe urban. 
+
+```{r, eval = F}
+
+#get counts
+  #save table as "counts"
+counts <- table(crypto$urban) 
+
+#get rounded proportions of counts
+round(prop.table(counts)*100, digits = 2)
+
+```
+
+
+Describe imported. 
+
+
+```{r, eval = F}
+
+#get counts
+  #save table as "counts"
+counts <- table(crypto$imported) 
+
+#get rounded proportions of counts
+round(prop.table(counts)*100, digits = 2)
+
+```
 
 
 <!---CHUNK_PAGEBREAK---> 
@@ -767,6 +922,7 @@ install.packages("summarytools")
 library(summarytools)
 
 #call the dfsummary function and view its output
+  #note that view is not capatilised (summarytools function)
 view(dfSummary(crypto))
 ```
 
@@ -823,4 +979,25 @@ crypto$agegpalt <- as.character(cut(
                               ))
 ```
 
+### Get a contingency table with proportions
+
+You can bind different dataframes together using the *rbind* (for rows) and *cbind* (for columns) functions. These have been combined in the following *big.table* function to give the desired outputs. You can run this code below which saves the *big.table* function in your environment; then you can use it the same way any other function works. 
+
+```{r, eval = F}
+#load the function
+big.table <- function(data, useNA = "no") {
+  count <- table(data, useNA = useNA)
+  prop <- round(prop.table(count)*100, digits = 2)
+  cumulative <- cumsum(prop)
+  rbind(count,
+        prop,
+        cumulative) 
+}
+```
+
+
+```{r, eval = F}
+#use the big.table function for sex
+big.table(crypto$sex)
+```
 
