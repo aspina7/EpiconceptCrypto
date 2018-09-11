@@ -876,7 +876,6 @@ crypto <- subset(
           )
 
 #check cases per year 
-
 table(crypto$year, useNA = "always")
 
 ```
@@ -911,6 +910,7 @@ hist(crypto$age[crypto$year == 2015],
      ylim = c(0, 100) )
 ```
 
+<!---CHUNK_PAGEBREAK---> 
 
 Look at the median and the interquartile range and test for equality of distributions:
 
@@ -1044,6 +1044,97 @@ When calculating annual incidence rates, we need information on total population
 <!---CHUNK_PAGEBREAK---> 
 
 ## Help Q6: 
+
+There are different approaches you can take when merging denominator data and calculating rates. You could, for example, collapse first the case-based data and collapse the denominator data and then merge the two. Here we take the approach of merging the data first and then collapsing them. 
+
+Reading in denominator data from csv files. 
+
+```{r}
+
+#read in denominators by region
+region <- read.csv("region.csv", sep = ";" , 
+                    stringsAsFactors = FALSE )
+
+
+#read in denominators by age
+agegroup <- read.csv("agegroup.csv", sep = ";" , 
+                    stringsAsFactors = FALSE )
+
+#read in denominatros by age and region
+agegroupregion <- read.csv("agegroupregion.csv", sep = ";" , 
+                    stringsAsFactors = FALSE )
+
+```
+
+
+### Merge the denominator data to the main dataset:
+
+```{r}
+
+#load your dataset 
+load("crypto.Rda")
+
+```
+
+Checking we have no missing values for the variable we would like to merge by:
+
+```{r, eval = F}
+
+#check region
+table(crypto$region, useNA = "always")
+
+```
+
+Merge first with region data: 
+
+```{r}
+#overwrite crypto with merged dataset
+  #all.x specifies crypto as the main dataset of interest
+crypto <- merge(crypto, region, by = "region", all.x = TRUE)
+
+#rename the total variable
+  #subset crypto variable names where equal to "total"
+  #overwrite with "den_reg"
+names(crypto)[names(crypto) == "total"] <- "den_reg"
+
+```
+
+<!---CHUNK_PAGEBREAK---> 
+
+Merge with age data: 
+
+```{r}
+#overwrite crypto with merged dataset
+  #all.x specifies crypto as the main dataset of interest
+crypto <- merge(crypto, agegroup, by = "age", all.x = TRUE)
+
+#rename the total variable
+  #subset crypto variable names where equal to "total"
+  #overwrite with "den_reg"
+names(crypto)[names(crypto) == "total"] <- "den_age"
+
+#drop those with missing denominator data
+crypto <- subset(
+              x = crypto,
+              subset = !is.na(crypto$den_age)
+            )
+
+```
+
+
+Save the data:
+
+```{r}
+
+#save your dataset
+save(crypto, file = "cryptorecodeddenom.Rda")
+
+```
+
+ 
+### Calculating annual incidence rates:
+
+
 
 <!---CHUNK_PAGEBREAK---> 
 
