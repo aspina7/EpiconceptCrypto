@@ -7,6 +7,11 @@
 - Perhaps use ggplot for figures?? Base uses heavy code to create nice plots and otherwise ends up quite ugly...
 
 
+# Errors in the STATA do-files 
+- There is an error in the data cleaning do-file (cant remember exactly, think it was imported) 
+- There is an error in line 26 of Annual incidence rates (should be a "means" in "ci" - same for all following occurences)
+- The forloop of annual incidence rates correcting to 100,000 pop also doesnt work
+
 
 
 
