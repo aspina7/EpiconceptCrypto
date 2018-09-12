@@ -240,25 +240,25 @@ Use *R-scripts*.
 
 We will mainly use packages which come ready installed with R (base code), but where it makes things easier we will use add-on packages. All the R packages you need for the exercises can be installed over the Internet.
 
-You will need to install these before starting. We will be using the following packages. 
+You will need to install these before starting. We will be using the following package. 
 
-- *xlsx*: for reading in excel files (requires java to be installed)
-- *EpiStats*: for creating two by two tables and calculating odds or risk ratios
+- *epiR*: for creating two by two tables and calculating incidence rates
 
 Packages can be installed using the *install.packages* function, where you specify the name of the package in quation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
 
 ```{r, eval = F}
 
-#install the xlsx package and packages it depends on
-install.packages("xlsx", dependencies = TRUE)
+#install the epiR package and packages it depends on
+install.packages("epiR", dependencies = TRUE)
 ```
 
-If you want to install multiple packages at once you can simply save (assign them to an object using the arrow, and "c" simply pulls strings together), the names of the packages you are interested in as a string object (which you can call whatever you like, in this case we called it required_packages) and pass these through the *install.packages* function; for example: 
+If you want to install multiple packages at once you can simply save (assign them to an object using the arrow, and "c" simply pulls strings together) the names of the packages you are interested in as a string object (which you can call whatever you like, in this case we called it required_packages) and pass these through the *install.packages* function; for example: 
 
 ```{r, eval = F}
 
 # Installing multiple required packages for the case study
-required_packages <- c("xlsx", "EpiStats")
+  #see appendix for using xlsx to read excel sheets (dont run this now)
+required_packages <- c("epiR", "xlsx")
 install.packages(required_packages, dependencies = TRUE)
 ```
 
@@ -282,7 +282,7 @@ After that, whenever you want to use a package in your *R* session, you need to 
 
 ```{r, eval = F}
 
-library(xlsx)
+library(epiR)
 
 ```
 
@@ -291,7 +291,7 @@ Here too, you can load multiple packages at the same time within a loop; again d
 ```{r, results='hide', message=FALSE, warning=FALSE}
 
 # Loading required packages for this case study
-required_packages <- c("xlsx", "EpiStats")
+required_packages <- c("epiR", "xlsx")
 
 for (i in seq(along = required_packages)) {
   library(required_packages[i], character.only = TRUE)
@@ -1133,6 +1133,90 @@ save(crypto, file = "cryptorecodeddenom.Rda")
 
  
 ### Calculating annual incidence rates:
+
+```{r}
+#load your cleaned dataset
+  #note that it is still called crypto
+load("cryptorecodeddenom.Rda")
+```
+
+First collapsing the data by year (and region, as all our denominators are by region).
+
+```{r}
+
+#sum the counts variable while grouping region, year and denom
+cryptoreg <- aggregate(count ~ region + year + den_reg, 
+                       FUN = sum, 
+                       data = crypto)
+```
+
+
+We can now collapse again by year. 
+
+```{r}
+
+#cbind collapses count and den_reg sepparately by year
+cryptoyear <- aggregate(cbind(count, den_reg) ~ year, 
+                        FUN = sum, 
+                        data = cryptoreg)
+```
+
+
+Calculate the annual incidence rates with 95% CI using the *epi.conf* function from the *epiR* package. 
+```{r}
+
+#epiconf requires your counts and denoms to be in a matrix
+  #select columns from your cryptoyear dataset using squarebrackets
+  #change it to a matrix using as.matrix
+IR <- epi.conf(as.matrix(cryptoyear[, c("count", "den_reg")]),
+         ctype = "inc.rate",
+         method = "exact") * 100000
+```
+
+Add this to your collapsed dataframe with counts using cbind 
+
+```{r}
+#add columns to cryptoyear from IR
+cryptoyear <- cbind(cryptoyear, IR)
+
+```
+
+
+
+
+Plot the incidence rates:
+
+```{r, eval = F}
+
+#plot the estimate from above
+  #type "o" specifies line graph
+plot(cryptoyear$year, cryptoyear$est, type = "o")
+
+```
+
+
+And you can make the plot nicer:
+
+```{r}
+
+plot(cryptoyear$year, cryptoyear$est, type = "o", 
+     ylim = c(0, 16), 
+     ylab = "Crude incidence rate per 100,000 inhabitants", 
+     xlab = "Year")
+```
+
+You can then also export your plot and save your dataset 
+
+```{r, eval = F}
+
+#export plot as a png file
+dev.copy(png,'Crypto inc by year.png')
+dev.off()
+
+#save incidence rate dataset
+save(cryptoyear, file = "cryptoyear.Rda")
+
+```
 
 
 
