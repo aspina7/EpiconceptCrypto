@@ -23,3 +23,5 @@ The following files are included:
 - *.gitignore*: required for the initiation of git repositories. 
 - *crypto.csv*, *region.csv*, *agegroup.csv*, *agegroupregion.csv*: CSV versions of the original datafiles for the case study. 
 - *EpiconceptCryptoCaseStudy.docx*: Word document output of the *EpiconceptCryptoCaseStudy.Rmd* for the case study
+- *DataChecking.R*: Clean r-script for checking raw data 
+- *DataRecoding.R*: Clean r-script for recoding raw data
