@@ -240,9 +240,10 @@ Use *R-scripts*.
 
 We will mainly use packages which come ready installed with R (base code), but where it makes things easier we will use add-on packages. All the R packages you need for the exercises can be installed over the Internet.
 
-You will need to install these before starting. We will be using the following package. 
+You will need to install these before starting. We will be using the following packages. 
 
 - *epiR*: for creating two by two tables and calculating incidence rates
+- *broom*: for cleaning up the output of poisson regressions
 
 Packages can be installed using the *install.packages* function, where you specify the name of the package in quation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
 
@@ -257,8 +258,7 @@ If you want to install multiple packages at once you can simply save (assign the
 ```{r, eval = F}
 
 # Installing multiple required packages for the case study
-  #see appendix for using xlsx to read excel sheets (dont run this now)
-required_packages <- c("epiR", "xlsx")
+required_packages <- c("epiR", "broom")
 install.packages(required_packages, dependencies = TRUE)
 ```
 
@@ -278,7 +278,7 @@ for (pkg in required_packages) {
 
 Once you have succesfully installed all your packages they are saved on your computer. This means that you only need to install them the first time. 
 
-After that, whenever you want to use a package in your *R* session, you need to load the package using the *library* function; the console will give you several messages in red, however this are most often just information and not errors. Note that here, you do not require quotation marks, for example: 
+After that, whenever you want to use a package in your *R* session, you need to load the package using the *library* function; the console will give you several messages in red, however these are most often just information and not errors. Note that here, you do not require quotation marks, for example: 
 
 ```{r, eval = F}
 
@@ -291,7 +291,7 @@ Here too, you can load multiple packages at the same time within a loop; again d
 ```{r, results='hide', message=FALSE, warning=FALSE}
 
 # Loading required packages for this case study
-required_packages <- c("epiR", "xlsx")
+required_packages <- c("epiR", "broom")
 
 for (i in seq(along = required_packages)) {
   library(required_packages[i], character.only = TRUE)
@@ -1246,7 +1246,7 @@ Calculate the annual incidence rates with 95% CI using the *epi.conf* function f
 ```{r}
 
 #epiconf requires your counts and denoms to be in a matrix
-  #select columns from your cryptoyear dataset using squarebrackets
+  #select columns from your dataset using squarebrackets
   #change it to a matrix using as.matrix
 IR <- epi.conf(as.matrix(cryptoreg[, c("count", "den_reg")]),
          ctype = "inc.rate",
@@ -1256,7 +1256,7 @@ IR <- epi.conf(as.matrix(cryptoreg[, c("count", "den_reg")]),
 Add this to your collapsed dataframe with counts using *cbind*.
 
 ```{r}
-#add columns to cryptoyear from IR
+#add columns to dataset from IR
 cryptoreg <- cbind(cryptoreg, IR)
 
 ```
@@ -1336,7 +1336,7 @@ cryptoage <- aggregate(cbind(count, den_age) ~ ar_age + year,
 
 ```{r}
 #epiconf requires your counts and denoms to be in a matrix
-  #select columns from your cryptoyear dataset using squarebrackets
+  #select columns from your dataset using squarebrackets
   #change it to a matrix using as.matrix
 IR <- epi.conf(as.matrix(cryptoage[, c("count", "den_age")]),
          ctype = "inc.rate",
@@ -1346,7 +1346,7 @@ IR <- epi.conf(as.matrix(cryptoage[, c("count", "den_age")]),
 Add this to your collapsed dataframe with counts using *cbind*.
 
 ```{r}
-#add columns to cryptoyear from IR
+#add columns to dataset from IR
 cryptoage <- cbind(cryptoage, IR)
 
 ```
@@ -1364,7 +1364,7 @@ Calculate incidence rate ratios, 95% CI and p-values
 - between the average of 2012-14 and 2015. 
 - between urban and rural areas for 2015. 
 
-Use Poisson. 
+Use Poisson regression. 
 
 
 Interpret your findings. 
@@ -1374,7 +1374,153 @@ Interpret your findings.
 ## Help Q7: 
 
 
+```{r, eval = F}
 
+#load your cleaned dataset
+load("cryptoyear.Rda")
+
+```
+
+Calculate incidence rate ratios of all years compared to 2015 data:
+
+In order to use the 2015 year as a reference, you need to use the relevel function. 
+
+```{r}
+
+#change 2015 to reference group using relevel function
+cryptoyear$year <- relevel(factor(cryptoyear$year), ref = "2015")
+```
+
+For poisson regression, we will use the glm function with a poisson family and log link.
+
+```{r}
+
+#run poisson regression of counts by year
+model1 <- glm(count ~ year , 
+              family = poisson(link = "log"), 
+              data = cryptoyear, offset = log(den_reg))
+
+#use the tidy function from broom package to simplify the regression output
+model1clean <- tidy(model1, exponentiate = TRUE, conf.int = TRUE)
+
+```
+
+
+```{r, echo = F}
+#not visible to participants 
+#show the output from regression 
+model1clean
+
+```
+
+Example of interpretation: Compared to the incidence rate in 2015, the incidence in 2014 was around 10% lower, although this was not statistically significant. Compared to the incidence rate in 2015, the incidence rate in 2013 was around 21% higher (p=0.006).
+
+### Incidence rate ratio of 2015 compared to 2012-14 data:
+
+collapse your data producing mean counts for 2012-2014 
+
+```{r}
+
+#create a variable for current year 
+cryptoyear$curryear <- NA
+cryptoyear$curryear[cryptoyear$year == 2015] <- 1
+cryptoyear$curryear[cryptoyear$year %in% c(2012:2014)] <- 0
+
+#aggregate using the mean function
+meanyear <- aggregate(count ~ curryear + den_reg, 
+                        FUN = mean, 
+                        data = cryptoyear)
+
+#change the count variable to an integer 
+  #required for poisson regression
+meanyear$count <- as.integer(meanyear$count)
+
+```
+
+
+
+```{r}
+
+#run poisson regression of counts by year
+model2 <- glm(count ~ curryear, 
+              family = poisson(link = "log"), 
+              data = meanyear, offset = log(den_reg))
+
+#use the tidy function from broom package to simplify the regression output
+model2clean <- tidy(model2, exponentiate = TRUE, conf.int = TRUE)
+
+```
+
+
+```{r, echo = F}
+#not visible to participants 
+#show the output from regression 
+model2clean
+
+```
+
+There was a 12% reduction in incidence of Cryptosporidiosis in 2015 compared to the average of 2012-14 (p=0.077).
+
+### Incidence rate ratio: urban vs rural areas:
+
+
+```{r}
+#load your cleaned dataset
+  #note that it is still called crypto
+load("cryptorecodeddenom.Rda")
+```
+
+Subset data for 2015
+
+```{r}
+#only keep 2015 counts
+crypto <- subset(crypto, 
+                 year == 2015)
+
+```
+
+
+```{r}
+#aggregate using the sum function
+cryptoag <- aggregate(count ~ urban + den_reg, 
+                        FUN = sum, 
+                        data = crypto)
+
+#sum rural seperately 
+  #aggregate doesnt work because only one urban row
+cryptorural <- colSums(cryptoag[1:6, 2:3])
+
+#bind sums together 
+cryptosum <- rbind(cryptorural, cryptoag[7, 2:3])
+
+#change urban to binary
+cryptosum$urban <- c(0,1)
+```
+
+
+
+```{r}
+
+#run poisson regression of counts by year
+model3 <- glm(count ~ urban, 
+              family = poisson(link = "log"), 
+              data = cryptosum, offset = log(den_reg))
+
+#use the tidy function from broom package to simplify the regression output
+model3clean <- tidy(model3, exponentiate = TRUE, conf.int = TRUE)
+
+```
+
+
+```{r, echo = F}
+#not visible to participants 
+#show the output from regression 
+model3clean
+
+```
+
+
+In 2015, there was a 76% lower incidence of Cryptosporidiosis in urban areas compared to rural areas.
 
 
 <!---CHUNK_PAGEBREAK---> 
