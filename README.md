@@ -10,8 +10,8 @@
 # Errors in the STATA do-files 
 - There is an error in the data cleaning do-file (cant remember exactly, think it was imported) 
 - There is an error in line 26 of Annual incidence rates (should be a "means" in "ci" - same for all following occurences)
-- The forloop of annual incidence rates correcting to 100,000 pop also doesnt work
-
+- The forloop of annual incidence rates correcting to 100,000 pop also doesnt work 
+- Saving "crypto inc by year.dta" is done in the "annual incidence rates" do-file, but not in the original case study word document
 
 
 
