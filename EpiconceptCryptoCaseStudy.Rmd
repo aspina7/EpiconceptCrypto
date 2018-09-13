@@ -417,9 +417,12 @@ summary(crypto$age)
 
 ```
 
-
+ 
 For numeric variables, such as age and dates, you can use histograms to check for unusual patterns or outliers. You specify your variable as well as axis labels. To save you can plot, then use *dev.copy* to choose a file type and name; *dev.off* closes the connection. 
 For date variable you need to specify what time frame you would like to plot, such as "days", "weeks", "months", "years". Because there are so many points to plot, you need to specify you want the frequency, otherwise the density will be plotted. 
+
+<!---CHUNK_PAGEBREAK---> 
+
 
 ```{r, eval = F}
 
@@ -730,6 +733,10 @@ hist(crypto$age,
 summary(crypto$age)
 ```
 
+ 
+ <!---CHUNK_PAGEBREAK---> 
+
+
 To plot side by side histograms you need to use the "par" function. 
 
 
@@ -760,6 +767,9 @@ hist(crypto$age[crypto$sex == "female"],
 
 
 ```
+
+
+<!---CHUNK_PAGEBREAK---> 
 
 
 Describe sex. To see how to bind these together in to a signle contingency table, see the appendix. 
@@ -1172,6 +1182,8 @@ IR <- epi.conf(as.matrix(cryptoyear[, c("count", "den_reg")]),
          ctype = "inc.rate",
          method = "exact") * 100000
 ```
+ 
+<!---CHUNK_PAGEBREAK---> 
 
 Add this to your collapsed dataframe with counts using cbind 
 
@@ -1217,6 +1229,10 @@ dev.off()
 save(cryptoyear, file = "cryptoyear.Rda")
 
 ```
+
+
+<!---CHUNK_PAGEBREAK---> 
+
 
 ###  Annual incidence rates by region 
 
@@ -1274,7 +1290,11 @@ cryptoreg <- reshape(cryptoreg, idvar = "year", timevar = "region", direction = 
 
 ```
 
-Then you  can create graphs (it also easier to export to Excel): 
+
+<!---CHUNK_PAGEBREAK---> 
+
+
+Then you  can create graphs: 
 ```{r}
 #use matplot to plot columns 2 to 8 of your dataset
   #choose to plot lines with dots using pch = 1
@@ -1293,6 +1313,8 @@ legend("topright",
        pch = 1)
 ```
 
+
+<!---CHUNK_PAGEBREAK---> 
 
 
 ### Annual incidence rates by age
@@ -1406,14 +1428,10 @@ model1clean <- tidy(model1, exponentiate = TRUE, conf.int = TRUE)
 ```
 
 
-```{r, echo = F}
-#not visible to participants 
-#show the output from regression 
-model1clean
-
-```
-
 Example of interpretation: Compared to the incidence rate in 2015, the incidence in 2014 was around 10% lower, although this was not statistically significant. Compared to the incidence rate in 2015, the incidence rate in 2013 was around 21% higher (p=0.006).
+
+<!---CHUNK_PAGEBREAK---> 
+
 
 ### Incidence rate ratio of 2015 compared to 2012-14 data:
 
@@ -1451,15 +1469,11 @@ model2clean <- tidy(model2, exponentiate = TRUE, conf.int = TRUE)
 
 ```
 
-
-```{r, echo = F}
-#not visible to participants 
-#show the output from regression 
-model2clean
-
-```
-
 There was a 12% reduction in incidence of Cryptosporidiosis in 2015 compared to the average of 2012-14 (p=0.077).
+
+
+<!---CHUNK_PAGEBREAK---> 
+
 
 ### Incidence rate ratio: urban vs rural areas:
 
@@ -1508,14 +1522,6 @@ model3 <- glm(count ~ urban,
 
 #use the tidy function from broom package to simplify the regression output
 model3clean <- tidy(model3, exponentiate = TRUE, conf.int = TRUE)
-
-```
-
-
-```{r, echo = F}
-#not visible to participants 
-#show the output from regression 
-model3clean
 
 ```
 
