@@ -26,7 +26,7 @@ for (pkg in required_packages) {
 }
 
 
-### Loading packages to session ####
+#### Loading packages to session ####
 
 # loading one package
 library(epiR)
