@@ -1140,7 +1140,7 @@ save(crypto, file = "cryptorecodeddenom.Rda")
 load("cryptorecodeddenom.Rda")
 ```
 
-First collapsing the data by year (and region, as all our denominators are by region).
+First collapse the data by year (and region, as all our denominators are by region).
 
 ```{r}
 
@@ -1215,6 +1215,139 @@ dev.off()
 
 #save incidence rate dataset
 save(cryptoyear, file = "cryptoyear.Rda")
+
+```
+
+###  Annual incidence rates by region 
+
+
+```{r}
+#load your cleaned dataset
+  #note that it is still called crypto
+load("cryptorecodeddenom.Rda")
+```
+
+First collapse the data by year (and region, as all our denominators are by region).
+
+```{r}
+
+#sum the counts variable while grouping region, year and denom
+cryptoreg <- aggregate(count ~ region + year + den_reg, 
+                       FUN = sum, 
+                       data = crypto)
+
+#sort your dataset by region 
+cryptoreg <- cryptoreg[order(cryptoreg$region), ]
+
+```
+
+
+Calculate the annual incidence rates with 95% CI using the *epi.conf* function from the *epiR* package. 
+```{r}
+
+#epiconf requires your counts and denoms to be in a matrix
+  #select columns from your cryptoyear dataset using squarebrackets
+  #change it to a matrix using as.matrix
+IR <- epi.conf(as.matrix(cryptoreg[, c("count", "den_reg")]),
+         ctype = "inc.rate",
+         method = "exact") * 100000
+```
+
+Add this to your collapsed dataframe with counts using *cbind*.
+
+```{r}
+#add columns to cryptoyear from IR
+cryptoreg <- cbind(cryptoreg, IR)
+
+```
+
+It would be possible to iteratively add one line per region at a time to a graph. 
+However it would be better to reshape data to wide-format. 
+
+```{r}
+#First we need to get rid of unnecessary variables
+cryptoreg <- cryptoreg[ , c("region", "year", "est")]
+
+
+#then we can spread the data with reshape
+cryptoreg <- reshape(cryptoreg, idvar = "year", timevar = "region", direction = "wide")
+
+```
+
+Then you  can create graphs (it also easier to export to Excel): 
+```{r}
+#use matplot to plot columns 2 to 8 of your dataset
+  #choose to plot lines with dots using pch = 1
+matplot(cryptoreg$year, cryptoreg[, 2:8],   
+        type = "o", 
+        col = 1:7 , 
+        pch = 1, 
+        ylab = "Crude incidence rate", 
+        xlab = "Year"
+        )
+
+#add a legend 
+legend("topright", 
+       legend = 1:7, 
+       col = 1:7, 
+       pch = 1)
+```
+
+
+
+### Annual incidence rates by age
+
+
+
+```{r}
+#load your cleaned dataset
+  #note that it is still called crypto
+load("cryptorecodeddenom.Rda")
+```
+
+
+
+First collapse the data by year and age (remember to use the denominator for age). Remember that we do not need to collapse the denominator data:
+
+```{r}
+
+#sum the counts variable while grouping age, agegroup, year and denom
+cryptoage <- aggregate(count ~ age + ar_age + year + den_age, 
+                       FUN = sum, 
+                       data = crypto)
+
+#sort your dataset by year 
+cryptoage <- cryptoage[order(cryptoage$year), ]
+
+```
+
+
+Then in a second step collapse the data by age group and year (note that here we need to collapse the denominator data):
+
+
+```{r}
+
+#cbind collapses count and den_reg sepparately by year
+cryptoage <- aggregate(cbind(count, den_age) ~ ar_age + year, 
+                        FUN = sum, 
+                        data = cryptoage)
+
+```
+
+```{r}
+#epiconf requires your counts and denoms to be in a matrix
+  #select columns from your cryptoyear dataset using squarebrackets
+  #change it to a matrix using as.matrix
+IR <- epi.conf(as.matrix(cryptoage[, c("count", "den_age")]),
+         ctype = "inc.rate",
+         method = "exact") * 100000
+```
+
+Add this to your collapsed dataframe with counts using *cbind*.
+
+```{r}
+#add columns to cryptoyear from IR
+cryptoage <- cbind(cryptoage, IR)
 
 ```
 
