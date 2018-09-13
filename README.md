@@ -1,11 +1,5 @@
 # Notes for revisions: 
 
-- The *xlsx* package is quite heavily java reliant, so setup can be annoying depending on admin rights/java home directories and it can also be quite slow/fail with larger datasets [**SOLUTION**: read from csv files; add reading from excel to an appendix]
-  - Alternative options include tidyverse's *readxl* package (issue: creates a tbl rather than a dataframe with complicated POSIxct dates; could just add an extra step where change from tbl to data frame), or the *RODBC* package which can connect to many different sources (issue: unecessary extra code). Many other java based excel connection packages exist but dont really differ from *xlsx*. 
-- The *Hmisc* package is only used for the describe function, not sure we actually need to include it in the case study, could mention that it is out there but think that str and summary give enough information. The issue is *Hmisc* sometimes creates problems on install depending on admin rights and read/write folders etc. [**SOLUTION**: Remove, no need to complicate]
-- Unsure about how much explanation of code is needed; the stata case study has almost none, but code is quite similar. If this is not the first case study used then perhaps the level of explanation is not necessary. 
-- Perhaps use ggplot for figures?? Base uses heavy code to create nice plots and otherwise ends up quite ugly...
-
 
 # Errors in the STATA do-files 
 - There is an error in the data cleaning do-file (cant remember exactly, think it was imported) 
@@ -26,3 +20,5 @@ The following files are included:
 - *README.md*: a markdown file that is used to create this introductory text for the git-hub repository. 
 - *EpiconceptCrypto.Rproj*: an R project required for being able to push scripts up on to git-hub. 
 - *.gitignore*: required for the initiation of git repositories. 
+- *crypto.csv*, *region.csv*, *agegroup.csv*, *agegroupregion.csv*: CSV versions of the original datafiles for the case study. 
+- *EpiconceptCryptoCaseStudy.docx*: Word document output of the *EpiconceptCryptoCaseStudy.Rmd* for the case study
