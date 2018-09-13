@@ -1,5 +1,6 @@
 # Notes for revisions: 
 
+None
 
 # Errors in the STATA do-files 
 - There is an error in the data cleaning do-file (cant remember exactly, think it was imported) 
