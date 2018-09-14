@@ -745,7 +745,7 @@ To plot side by side histograms you need to use the "par" function.
 #specify you want one row of two histograms
 par(mfrow = c(1,2))
 
-#plot a histograme for males (use squarebrackets to subset)
+#plot a histogram for males (use squarebrackets to subset)
   #give a title using "main", 
   #set the y axis limits using ylim
 hist(crypto$age[crypto$sex == "male"], 
