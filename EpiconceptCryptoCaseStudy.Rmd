@@ -879,7 +879,7 @@ Drop data from years that are not relevant using the subset function. For this a
 
 ```{r}
 
-#assign your 2015 subset to crypto (over-write original crypto)
+#assign your 2014-2015 subset to crypto (over-write original crypto)
 crypto <- subset(
             x = crypto,
             subset = year >= 2014
@@ -896,12 +896,12 @@ Compare age in 2015 to 2014:
 
 ```{r, eval = F}
 
-#specify you want one row of two histograms
+# specify you want one row of two histograms
 par(mfrow = c(1,2))
 
-#plot a histograme for males (use squarebrackets to subset)
-  #give a title using "main", 
-  #set the y axis limits using ylim
+# plot a histogram for males (use squarebrackets to subset)
+  # give a title using "main", 
+  # set the y axis limits using ylim
 hist(crypto$age[crypto$year == 2014], 
      main = "2014",
      xlab = "Age", 
@@ -910,7 +910,7 @@ hist(crypto$age[crypto$year == 2014],
      xlim = c(0, 100), 
      ylim = c(0, 100) )
 
-#plot a histogram for females
+# plot a histogram for females
 hist(crypto$age[crypto$year == 2015], 
      main = "2015",
      xlab = "Age", 
@@ -925,12 +925,12 @@ hist(crypto$age[crypto$year == 2015],
 Look at the median and the interquartile range and test for equality of distributions:
 
 ```{r, eval = F}
-#use the aggregate function to group by year 
-  #year must be as a list 
-  #specify the function you would like to use (summary)
+# use the aggregate function to group by year
+  # year must be as a list
+  # specify the function you would like to use (summary)
 aggregate(crypto$age, by = list(crypto$year), FUN = summary)
 
-#use the boxplot function to plot 
+# use the boxplot function to plot 
 
 boxplot(age~year, data = crypto)
 
@@ -947,12 +947,12 @@ wilcox.test(crypto$age~crypto$year)
 Look at the means (and standard deviations) and compare means using the t-test:
 
 ```{r, eval = F}
-#use the aggregate function to group by year 
-  #year must be as a list 
-  #specify the function you would like to use (summary)
+# use the aggregate function to group by year 
+  # year must be as a list 
+  # specify the function you would like to use (summary)
 aggregate(crypto$age, by = list(crypto$year), FUN = summary)
 
-#use t.test function to compare means
+# use t.test function to compare means
 t.test(crypto$age ~ crypto$year)
 
 ```
@@ -961,17 +961,17 @@ Comparison of proportion of male/female, hospitalised, urban/rural, imported/not
 
 ```{r, eval = F}
 
-#For sex
+# For sex
 
-#get counts
-  #save table as "counts"
+# get counts
+  # save table as "counts"
 counts <- table(crypto$sex, crypto$year) 
 
-#get rounded proportions of counts
-  #margin = 2 for column proportions
+# get rounded proportions of counts
+  # margin = 2 for column proportions
 round(prop.table(counts, margin = 2) * 100, digits = 2)
 
-#chisq.test function requires you to input a table
+# chisq.test function requires you to input a table
 chisq.test(counts)
 
 ```
@@ -980,17 +980,17 @@ chisq.test(counts)
 
 ```{r, eval = F}
 
-#For hospitalised
+# For hospitalised
 
-#get counts
-  #save table as "counts"
+# get counts
+  # save table as "counts"
 counts <- table(crypto$hospitalised, crypto$year) 
 
-#get rounded proportions of counts
-  #margin = 2 for column proportions
+# get rounded proportions of counts
+  # margin = 2 for column proportions
 round(prop.table(counts, margin = 2) * 100, digits = 2)
 
-#chisq.test function requires you to input a table
+# chisq.test function requires you to input a table
 chisq.test(counts)
 
 ```
@@ -999,17 +999,17 @@ chisq.test(counts)
 
 ```{r, eval = F}
 
-#For urban
+# For urban
 
-#get counts
-  #save table as "counts"
+# get counts
+  # save table as "counts"
 counts <- table(crypto$urban, crypto$year) 
 
-#get rounded proportions of counts
-  #margin = 2 for column proportions
+# get rounded proportions of counts
+  # margin = 2 for column proportions
 round(prop.table(counts, margin = 2) * 100, digits = 2)
 
-#chisq.test function requires you to input a table
+# chisq.test function requires you to input a table
 chisq.test(counts)
 
 ```
@@ -1018,17 +1018,17 @@ chisq.test(counts)
 
 ```{r, eval = F}
 
-#For imported
+# For imported
 
-#get counts
-  #save table as "counts"
+# get counts
+  # save table as "counts"
 counts <- table(crypto$imported, crypto$year) 
 
-#get rounded proportions of counts
-  #margin = 2 for column proportions
+# get rounded proportions of counts
+  # margin = 2 for column proportions
 round(prop.table(counts, margin = 2) * 100, digits = 2)
 
-#chisq.test function requires you to input a table
+# chisq.test function requires you to input a table
 chisq.test(counts)
 
 ```
