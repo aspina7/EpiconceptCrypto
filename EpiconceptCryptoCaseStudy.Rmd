@@ -1061,16 +1061,16 @@ Reading in denominator data from csv files.
 
 ```{r}
 
-#read in denominators by region
+# read in denominators by region
 region <- read.csv("region.csv", sep = ";" , 
                     stringsAsFactors = FALSE )
 
 
-#read in denominators by age
+# read in denominators by age
 agegroup <- read.csv("agegroup.csv", sep = ";" , 
                     stringsAsFactors = FALSE )
 
-#read in denominatros by age and region
+# read in denominatros by age and region
 agegroupregion <- read.csv("agegroupregion.csv", sep = ";" , 
                     stringsAsFactors = FALSE )
 
@@ -1081,7 +1081,7 @@ agegroupregion <- read.csv("agegroupregion.csv", sep = ";" ,
 
 ```{r}
 
-#load your dataset 
+# load your dataset 
 load("crypto.Rda")
 
 ```
@@ -1090,7 +1090,7 @@ Checking we have no missing values for the variable we would like to merge by:
 
 ```{r, eval = F}
 
-#check region
+# check region
 table(crypto$region, useNA = "always")
 
 ```
@@ -1098,13 +1098,13 @@ table(crypto$region, useNA = "always")
 Merge first with region data: 
 
 ```{r}
-#overwrite crypto with merged dataset
-  #all.x specifies crypto as the main dataset of interest
+# overwrite crypto with merged dataset
+  # all.x specifies crypto as the main dataset of interest
 crypto <- merge(crypto, region, by = "region", all.x = TRUE)
 
-#rename the total variable
-  #subset crypto variable names where equal to "total"
-  #overwrite with "den_reg"
+# rename the total variable
+  # subset crypto variable names where equal to "total"
+  # overwrite with "den_reg"
 names(crypto)[names(crypto) == "total"] <- "den_reg"
 
 ```
@@ -1114,16 +1114,16 @@ names(crypto)[names(crypto) == "total"] <- "den_reg"
 Merge with age data: 
 
 ```{r}
-#overwrite crypto with merged dataset
-  #all.x specifies crypto as the main dataset of interest
+# overwrite crypto with merged dataset
+  # all.x specifies crypto as the main dataset of interest
 crypto <- merge(crypto, agegroup, by = "age", all.x = TRUE)
 
-#rename the total variable
-  #subset crypto variable names where equal to "total"
-  #overwrite with "den_reg"
+# rename the total variable
+  # subset crypto variable names where equal to "total"
+  # overwrite with "den_reg"
 names(crypto)[names(crypto) == "total"] <- "den_age"
 
-#drop those with missing denominator data
+# drop those with missing denominator data
 crypto <- subset(
               x = crypto,
               subset = !is.na(crypto$den_age)
@@ -1136,7 +1136,7 @@ Save the data:
 
 ```{r}
 
-#save your dataset
+# save your dataset
 save(crypto, file = "cryptorecodeddenom.Rda")
 
 ```
