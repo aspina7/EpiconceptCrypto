@@ -1,14 +1,3 @@
-# Notes for revisions: 
-
-None
-
-# Errors in the STATA do-files 
-- There is an error in the data cleaning do-file (cant remember exactly, think it was imported) 
-- There is an error in line 26 of Annual incidence rates (should be a "means" in "ci" - same for all following occurences)
-- The forloop of annual incidence rates correcting to 100,000 pop also doesnt work 
-- Saving "crypto inc by year.dta" is done in the "annual incidence rates" do-file, but not in the original case study word document
-
-
 
 # Analysis of surveillance data: Analysing Cryptosporidium notification data from country X, 2004-2015
 
@@ -25,3 +14,16 @@ The following files are included:
 - *EpiconceptCryptoCaseStudy.docx*: Word document output of the *EpiconceptCryptoCaseStudy.Rmd* for the case study
 - *DataChecking.R*: Clean r-script for checking raw data 
 - *DataRecoding.R*: Clean r-script for recoding raw data
+- *DescriptiveAnalysis.R*: Clean r-script for desctiptive analyses 
+- *ComparativeAnalysis.R*: Clean r-script for comparative analyses 
+- *MergingDenominators.R*: Clean r-script for combining datasets 
+- *AnnualIncidenceRates.R*: Clean r-script for calculating incidence rates 
+- *IRR.R*: Clean r-script for calculating incidence rate ratios using poisson 
+
+
+
+# Errors in the STATA do-files 
+- There is an error in the data cleaning do-file (cant remember exactly, think it was imported) 
+- There is an error in line 26 of Annual incidence rates (should be a "means" in "ci" - same for all following occurences)
+- The forloop of annual incidence rates correcting to 100,000 pop also doesnt work 
+- Saving "crypto inc by year.dta" is done in the "annual incidence rates" do-file, but not in the original case study word document
