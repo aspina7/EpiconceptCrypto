@@ -62,6 +62,7 @@ This licence is based on http://creativecommons.org/licenses/by-sa/3.0/
 
 # Objectives 
 At the end of the case study, participants should be able to analyse surveillance data using Stata, going through all steps including 
+
 -	data checking, 
 - data cleaning/recoding, 
 - data description, 
@@ -193,12 +194,12 @@ When using *R*, please use *R-scripts*, ensuring there is a “Master” *R-scri
 **Descriptive analysis (with a focus on 2015 data)** 
 
 - Describe the number of cases in 2015 
-- Describe age (age histogramme, median and interquartile range) 
+- Describe age (age histogram, median and interquartile range) 
 - Describe sex, hospitalisation status of patient, region of notification, country of infection.
 
 **Comparative analysis 2015 to 2014** 
 
-- Age histogramme 2015 to 2014 
+- Age histogram 2015 to 2014 
 - Comparison of age 2015 to 2014: 
   - Comparison of means 
   - Comparison of medians 
@@ -245,7 +246,7 @@ You will need to install these before starting. We will be using the following p
 - *epiR*: for creating two by two tables and calculating incidence rates
 - *broom*: for cleaning up the output of poisson regressions
 
-Packages can be installed using the *install.packages* function, where you specify the name of the package in quation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
+Packages can be installed using the *install.packages* function, where you specify the name of the package in quotation marks and whether you also want to install other packages which are required to run the package of interest (where TRUE/FALSE means YES/NO); for example:
 
 ```{r, eval = F}
 
@@ -276,7 +277,7 @@ for (pkg in required_packages) {
 
 <!---CHUNK_PAGEBREAK--->
 
-Once you have succesfully installed all your packages they are saved on your computer. This means that you only need to install them the first time. 
+Once you have successfully installed all your packages they are saved on your computer. This means that you only need to install them the first time. 
 
 After that, whenever you want to use a package in your *R* session, you need to load the package using the *library* function; the console will give you several messages in red, however these are most often just information and not errors. Note that here, you do not require quotation marks, for example: 
 
@@ -320,7 +321,7 @@ setwd("C:/Users/Username/Desktop/EpiconceptCrypto")
 
 ### Reading in files
 
-Import the dataset from a comma seperated value (.csv) file using the *read.csv* function, storing it as a dataframe within *R* called crypto. For a CSV file the separator is normally a comma, however depending on the language of your operating system this can also be other values, for example a semi-colon. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
+Import the dataset from a comma separated value (.csv) file using the *read.csv* function, storing it as a data frame within *R* called crypto. For a CSV file the separator is normally a comma, however depending on the language of your operating system this can also be other values, for example a semi-colon. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
 
 ```{r}
 crypto <- read.csv("crypto.csv", sep = ";" , 
@@ -373,7 +374,7 @@ table(!is.na(crypto$Notif_Date) &
 ```
 
 
-There are two ways to select rows which have onset after notification. One way is to use the *subset* function, which you specificy the dataset in the x argument, then provide a rule for selecting rows in the subset argument and finaly specify which columns to select. The second alternative involves using square brackets to subset the dataframe; in this scenario what comes before the comma specifies rows and what comes after specifies columns; for example **dataset[rows, columns]**. Both options give the same outcome. 
+There are two ways to select rows which have onset after notification. One way is to use the *subset* function, which you specify the dataset in the x argument, then provide a rule for selecting rows in the subset argument and finally specify which columns to select. The second alternative involves using square brackets to subset the data frame; in this scenario what comes before the comma specifies rows and what comes after specifies columns; for example **dataset[rows, columns]**. Both options give the same outcome. 
 
 <!---CHUNK_PAGEBREAK--->
 
@@ -483,7 +484,7 @@ Optional: Generate a new variable indicating if a patient is hospitalised or not
 
 ### Reading in files
 
-Import the dataset from a comma seperated value (.csv) file using the *read.csv* function, storing it as a dataframe within *R* called crypto. For a CSV file the separator is normally a comma, however depending on the language of your operating system this can also be other values, for example a semi-colon. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
+Import the dataset from a comma separated value (.csv) file using the *read.csv* function, storing it as a data frame within *R* called crypto. For a CSV file the separator is normally a comma, however depending on the language of your operating system this can also be other values, for example a semi-colon. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
 
 ```{r}
 crypto <- read.csv("crypto.csv", sep = ";" , 
@@ -772,7 +773,7 @@ hist(crypto$age[crypto$sex == "female"],
 <!---CHUNK_PAGEBREAK---> 
 
 
-Describe sex. To see how to bind these together in to a signle contingency table, see the appendix. 
+Describe sex. To see how to bind these together in to a single contingency table, see the appendix. 
 
 ```{r, eval = F}
 
@@ -1047,7 +1048,7 @@ The median age in 2015 is 5 years (IQR: 2-10) compared to 4 years in 2014 (IQR: 
 
 Calculate annual incidence rates (per 100 000 population), overall, by region and by age group (as used for the annual report). Plot the incidence rates. Calculate 95% CI around the incidence rates. Discuss what the 95% CI around these incidence rates mean.
 
-Store the incidence rates and their 95% CI in a dataframe.
+Store the incidence rates and their 95% CI in a data frame.
 
 When calculating annual incidence rates, we need information on total populations (e.g. total population by year, by region or by age). For this case study, we will use the population information in the Excel spreadsheet: “denominators2011.xls” (see also page 4 for more information). Note that we will use 2011 denominator data for all years for this case study, assuming little population fluctuation.
 
@@ -1185,7 +1186,7 @@ IR <- epi.conf(as.matrix(cryptoyear[, c("count", "den_reg")]),
  
 <!---CHUNK_PAGEBREAK---> 
 
-Add this to your collapsed dataframe with counts using cbind 
+Add this to your collapsed data frame with counts using cbind 
 
 ```{r}
 # add columns to cryptoyear from IR
@@ -1269,7 +1270,7 @@ IR <- epi.conf(as.matrix(cryptoreg[, c("count", "den_reg")]),
          method = "exact") * 100000
 ```
 
-Add this to your collapsed dataframe with counts using *cbind*.
+Add this to your collapsed data frame with counts using *cbind*.
 
 ```{r}
 # add columns to dataset from IR
@@ -1368,7 +1369,7 @@ IR <- epi.conf(as.matrix(cryptoage[, c("count", "den_age")]),
          method = "exact") * 100000
 ```
 
-Add this to your collapsed dataframe with counts using *cbind*.
+Add this to your collapsed data frame with counts using *cbind*.
 
 ```{r}
 # add columns to dataset from IR
@@ -1408,7 +1409,7 @@ load("cryptoyear.Rda")
 
 Calculate incidence rate ratios of all years compared to 2015 data:
 
-In order to use the 2015 year as a reference, you need to use the relevel function. 
+In order to use the 2015 year as a reference, you need to use the *relevel* function. 
 
 ```{r}
 
@@ -1534,12 +1535,143 @@ In 2015, there was a 76% lower incidence of Cryptosporidiosis in urban areas com
 
 <!---CHUNK_PAGEBREAK---> 
 
+
+## Q8: Incorporate output in to an R-markdown document (optional) 
+
+To make your work reproducible, consider combining your text, code and output in to a single document. 
+Create an R-markdown with output to a word document. 
+
+- Open a new R-markdown document  
+- Add appropriate headers and text 
+- Incorporate code from question 7 analyses above 
+- Knit to a word document
+
+<!---CHUNK_PAGEBREAK---> 
+
+
+## Help Q8: 
+
+### Open a new R-markdown document 
+
+*R-markdown* documents look similar to *R-scripts*, however they are able to do more than just run R-code. Extensive documentation is available on the [RStudio website](https://rmarkdown.rstudio.com/index.html). 
+
+In order to produce output documents you will need to install [Pandoc](https://pandoc.org/installing.html) and also a LaTeX processor such as [MiKTeX](https://miktex.org/download). 
+
+Once you have done this you can create a new *R-markdown* document. Do this by clicking on the **+** drop-down menu on the top right (as in the figure below). 
+
+![](NewRmarkdown.png)
+
+
+You will then be prompted to enter a document name, author and choose the output type. In this case we choose word. 
+
+![](NewRmarkdown2.png)
+
+
+Once you push OK, the *R-markdown* document opens and looks similar to an *R-script*. At the top is the so called YAML header, where the information you entered in the pop-up window appears. Below this is an *R-code chunk*, which specifies that all the following *R-code chunks* in this *R-markdown* document should be shown (or echoed) in the output word document. If you do not want your code to appear in your final word document, then set echo = FALSE. Below this is some example text and figures, which you can delete. 
+
+![](NewRmarkdown3.png)
+
+### Add headers and text 
+
+To add a header to your document, put a hashtag (#) in front of your text. As in the figure above where it says "## R Markdown", the text will turn blue. A single hashtag will give you a header, with subsequent hashtags producing subheadings. See this [R-studio cheeatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) for details and other useful syntax. 
+
+Try to add the following text to your *R-markdown* document with appropriate headings, subheadings and italics: 
+
+<!---CHUNK_PAGEBREAK---> 
+
+# Background 
+
+Cryptosporidium is a protozoal parasite that causes a diarrhoeal illness in humans known as cryptosporidiosis. It is transmitted by the faeco-oral route, with both animals and humans serving as potential reservoirs. Cryptosporidiosis is a notifiable disease in many countries across the world. 
+This report investigated cryptosporidium incidence in 2015 from surveillance data in Country X. 
+
+# Methods 
+
+## Data aquisition and structure 
+
+Routinely reported national surveillance data was used for analysis. This covered the years from 2004-2015 for the whole of Country X. 
+
+The data was case-based and thus one record designated one case of Cryptosporidium. Information on species (e.g. *C. parvum*, *C. hominis*, etc.) was not available in this dataset in country X. Due to funding restrictions, routine speciation of samples was stopped in most laboratories in country X. 
+
+Denominator data was sourced from the office of national statistics in Country X. These population counts were available from the year 2011 and broken down by region and age group. 
+
+## Data analysis 
+
+Using poisson regression, we calculated incidence rate ratios with corresponding 95% confidence intervals and p-values for three analyses. First comparing all years available using 2015 as a reference. Second, between the average of 2012-2014 and 2015. Finally, between urban and rural areas for 2015. 
+
+
+<!---CHUNK_PAGEBREAK---> 
+
+### Adding code and output
+
+To insert a chunk of code to your *R-markdown* document, click on the insert button and choose *R* (as in the figure below). Alternatively you can type Ctrl+Alt+I as a keyboard shortcut. 
+
+![](NewRmarkdown4.png)
+
+You might at this point want to load the *knitr* package, which allows you to output nice tables from a data frame. You can specify at the top of the chunk that you do not want to echo the code in your output as well as surpressing warnings and messages from loading the package. Within the *R* code chunk, you can comment and code exactly the same way as in *R-scripts*. You also need to load packages that you require for analysis (e.g. "broom" for this section). 
+
+
+![](NewRmarkdown5.png) 
+
+
+In between code chunks you can continue to add appropriate headers and text (e.g. add results and describe your tables). You can now add a coad chunk with the code from question 7. 
+
+
+```{r, eval = F}
+#### Reading in datasets ####
+
+#load your cleaned dataset
+load("cryptoyear.Rda")
+
+
+#### Incidence rate ratios of all years compared to 2015 data ### 
+
+# change 2015 to reference group using relevel function
+cryptoyear$year <- relevel(factor(cryptoyear$year), ref = "2015")
+
+# run poisson regression of counts by year
+model1 <- glm(count ~ year , 
+              family = poisson(link = "log"), 
+              data = cryptoyear, offset = log(den_reg))
+
+# use the tidy function from broom package to simplify the regression output
+model1clean <- tidy(model1, exponentiate = TRUE, conf.int = TRUE)
+
+```
+
+
+Then once you have your clean data frame with results, you can pass this through the *kable* function from the *knitr* package to get a nice table in your word document. 
+
+```{r}
+
+#clean output table of model
+kable(model1clean)
+
+```
+
+
+Continue to do this for the following parts of the analysis; adding text and code where appropriate. 
+
+### Knit to word document 
+
+Once you have finished with your document, you can click on the Knit button to create your word document output. 
+
+![](NewRmarkdown6.png) 
+
+
+
+
+
+
+
+
+<!---CHUNK_PAGEBREAK---> 
+
 # Appendix 
 
 
 ### Reading in Excel files
 
-Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, storing it as a dataframe within *R* called crypto. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
+Import the dataset from excel using the *read.xlsx* function from the *xlsx* package, storing it as a data frame within *R* called crypto. Here we also specify that we do not want to read in string (character or grouped variables as factors). 
 
 ```{r, eval = F}
 
@@ -1619,7 +1751,7 @@ crypto$agegpalt <- as.character(cut(
 
 ### Get a contingency table with proportions
 
-You can bind different dataframes together using the *rbind* (for rows) and *cbind* (for columns) functions. These have been combined in the following *big.table* function to give the desired outputs. You can run this code below which saves the *big.table* function in your environment; then you can use it the same way any other function works. 
+You can bind different data frames together using the *rbind* (for rows) and *cbind* (for columns) functions. These have been combined in the following *big.table* function to give the desired outputs. You can run this code below which saves the *big.table* function in your environment; then you can use it the same way any other function works. 
 
 ```{r, eval = F}
 #load the function
