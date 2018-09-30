@@ -10,12 +10,12 @@
 
 
 # install the epiR package and packages it depends on
-install.packages("epiR", dependencies = TRUE)
+# install.packages("epiR", dependencies = TRUE)
 
 
 # Installing multiple required packages for the case study
-required_packages <- c("epiR", "broom")
-install.packages(required_packages, dependencies = TRUE)
+# required_packages <- c("epiR", "broom")
+# install.packages(required_packages, dependencies = TRUE)
 
 # If unsure whether the packages installed use for-loop.
 # Installing required packages for this case study
@@ -47,7 +47,7 @@ for (i in seq(along = required_packages)) {
 getwd()
 
 # choose your folder path 
-setwd("C:/Users/Username/Desktop/EpiconceptCrypto")
+# setwd("C:/Users/Username/Desktop/EpiconceptCrypto")
 
 
 
@@ -87,6 +87,11 @@ table(is.na(crypto$CountryofInfection) |
 
 
 # Date validity
+
+# change date variabels from characters to dates 
+
+crypto$Notif_Date <- as.Date(crypto$Notif_Date, format = "%d.%m.%Y")
+crypto$OnsetDate <- as.Date(crypto$OnsetDate, format = "%d.%m.%Y")
 
 
 # check number not missing with onset on or before notification date

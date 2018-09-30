@@ -4,6 +4,12 @@
 # Created Oct 2016, revised July 2018
 # R-code written by Alexander Spina September 2018
 
+
+#### load required packages ####
+
+library(broom)
+
+
 #### Reading in datasets ####
 
 #load your cleaned dataset
