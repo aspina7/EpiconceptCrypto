@@ -19,6 +19,10 @@ The following files are included:
 - *MergingDenominators.R*: Clean r-script for combining datasets 
 - *AnnualIncidenceRates.R*: Clean r-script for calculating incidence rates 
 - *IRR.R*: Clean r-script for calculating incidence rate ratios using poisson 
+- *Master.R*: Clean r-script to run each of the other r-scripts
+- *MarkdownExample.Rmd*: Clean r-markdown document incorporating text and code from *IRR.R*
+- *NewRmarkdown1-6.png*: screenshots required for the case study .Rmd 
+
 
 
 
