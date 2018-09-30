@@ -1,0 +1,155 @@
+---
+title: "Crypto Outbreak Analysis"
+author: "Investigation team"
+date: "28 September 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Background 
+
+Cryptosporidium is a protozoal parasite that causes a diarrhoeal illness in humans known as cryptosporidiosis. It is transmitted by the faeco-oral route, with both animals and humans serving as potential reservoirs. Cryptosporidiosis is a notifiable disease in many countries across the world. 
+This report investigated cryptosporidium incidence in 2015 from surveillance data in Country X. 
+
+# Methods 
+
+## Data aquisition and structure 
+
+Routinely reported national surveillance data was used for analysis. This covered the years from 2004-2015 for the whole of Country X. 
+
+The data was case-based and thus one record designated one case of Cryptosporidium. Information on species (e.g. *C. parvum*, *C. hominis*, etc.) was not available in this dataset in country X. Due to funding restrictions, routine speciation of samples was stopped in most laboratories in country X. 
+
+Denominator data was sourced from the office of national statistics in Country X. These population counts were available from the year 2011 and broken down by region and age group. 
+
+## Data analysis 
+
+Using poisson regression, we calculated incidence rate ratios with corresponding 95% confidence intervals and p-values for three analyses. First comparing all years available using 2015 as a reference. Second, between the average of 2012-2014 and 2015. Finally, between urban and rural areas for 2015. 
+
+# Results 
+
+
+
+```{r, warning= FALSE, message= FALSE}
+#load "knitr": for styling tables
+library(knitr)
+
+#load "broom": for simplifying model output
+library(broom)
+```
+
+
+Poisson regression showed that several years had significantly different incidence rates for Cryptosporidium when compared with 2015 in Country X (Table 1). 
+
+
+**Table 1:** Incidence rate ratios for Cryptosporidium in Country X, by year, using 2015 as the reference
+
+```{r}
+#### Reading in datasets ####
+
+#load your cleaned dataset
+load("cryptoyear.Rda")
+
+
+#### Incidence rate ratios of all years compared to 2015 data ### 
+
+# change 2015 to reference group using relevel function
+cryptoyear$year <- relevel(factor(cryptoyear$year), ref = "2015")
+
+# run poisson regression of counts by year
+model1 <- glm(count ~ year , 
+              family = poisson(link = "log"), 
+              data = cryptoyear, offset = log(den_reg))
+
+# use the tidy function from broom package to simplify the regression output
+model1clean <- tidy(model1, exponentiate = TRUE, conf.int = TRUE)
+
+
+#clean output table of model
+kable(model1clean)
+
+```
+
+
+Further analysis showed that there was no significant difference in incidence rate for Cryptosporidium when comparing 2015 to the mean of years 2012 to 2014 (Table 2). 
+
+
+
+**Table 2:** Incidence rate ratios for Cryptosporidium in Country X, comparing 2015 to the mean of years 2012-2014
+```{r, warning= FALSE}
+
+#### Incidence rate ratio of 2015 compared to 2012-14 data ####
+
+# collapse your data producing mean counts for 2012-2014 
+
+# create a variable for current year 
+cryptoyear$curryear <- NA
+cryptoyear$curryear[cryptoyear$year == 2015] <- 1
+cryptoyear$curryear[cryptoyear$year %in% c(2012:2014)] <- 0
+
+# aggregate using the mean function
+meanyear <- aggregate(count ~ curryear + den_reg, 
+                      FUN = mean, 
+                      data = cryptoyear)
+
+# run poisson regression of counts by year
+model2 <- glm(count ~ curryear, 
+              family = poisson(link = "log"), 
+              data = meanyear, offset = log(den_reg))
+
+# use the tidy function from broom package to simplify the regression output
+model2clean <- tidy(model2, exponentiate = TRUE, conf.int = TRUE)
+
+#clean output table of model
+kable(model2clean)
+```
+
+
+
+The final analysis conducted, compared urban with rural areas and found no significant difference in incidence rates for 2015 (Table 3). 
+
+**Table 3**: Incidence rate ratio of Cryptosporidium for urban compared to rural areas in Country X, 2015
+```{r}
+#### Incidence rate ratio: urban vs rural areas #### 
+
+# load your cleaned dataset
+  # note that it is still called crypto
+load("cryptorecodeddenom.Rda")
+
+
+# only keep 2015 counts
+crypto <- subset(crypto, 
+                 year == 2015)
+
+# aggregate using the sum function
+cryptoag <- aggregate(count ~ urban + den_reg, 
+                      FUN = sum, 
+                      data = crypto)
+
+# sum rural seperately 
+  # aggregate doesnt work because only one urban row
+cryptorural <- colSums(cryptoag[1:6, 2:3])
+
+# bind sums together 
+cryptosum <- rbind(cryptorural, cryptoag[7, 2:3])
+
+# change urban to binary
+cryptosum$urban <- c(0,1)
+
+
+# run poisson regression of counts by year
+model3 <- glm(count ~ urban, 
+              family = poisson(link = "log"), 
+              data = cryptosum, offset = log(den_reg))
+
+# use the tidy function from broom package to simplify the regression output
+model3clean <- tidy(model3, exponentiate = TRUE, conf.int = TRUE)
+
+
+#clean output table of model
+kable(model3clean)
+
+```
+
